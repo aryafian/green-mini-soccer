@@ -41,9 +41,9 @@ function Hero({ backgroundImage, onBookNowClick }) {
       
       <div className="hero-content">
         <h1 className="hero-title">
-          <span className="title-line">Match</span>
-          <span className="title-line">Play</span>
-          <span className="title-line">Repeat</span>
+          <span className="title-line">Green</span>
+          <span className="title-line">Mini</span>
+          <span className="title-line">Soccer</span>
         </h1>
         
         <div className="hero-tagline">
