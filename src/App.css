@@ -23,7 +23,7 @@ html {
 
 /* Selection color */
 ::selection {
-  background: #667eea;
+  background: #48bb78;
   color: white;
 }
 
@@ -37,10 +37,10 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: #48bb78;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5568d3;
+  background: #38a169;
 }

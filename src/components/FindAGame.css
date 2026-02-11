@@ -29,7 +29,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 60, 114, 0.7) 0%, rgba(42, 82, 152, 0.5) 100%);
+  background: linear-gradient(135deg, rgba(20, 80, 50, 0.7) 0%, rgba(34, 139, 84, 0.5) 100%);
 }
 
 .page-background-next {
@@ -140,8 +140,8 @@
 
 .filter-group select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
 }
 
 .calendar-widget {
@@ -169,7 +169,7 @@
 }
 
 .month-nav-btn {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(72, 187, 120, 0.1);
   border: none;
   border-radius: 8px;
   width: 40px;
@@ -179,11 +179,11 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #667eea;
+  color: #48bb78;
 }
 
 .month-nav-btn:hover {
-  background: rgba(102, 126, 234, 0.2);
+  background: rgba(72, 187, 120, 0.2);
   transform: scale(1.05);
 }
 
@@ -223,12 +223,12 @@
 }
 
 .calendar-date:not(.empty):hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(72, 187, 120, 0.1);
   transform: scale(1.05);
 }
 
 .calendar-date.today {
-  background: #667eea;
+  background: #48bb78;
   color: white;
   font-weight: 600;
 }
@@ -260,7 +260,7 @@
 .search-btn {
   width: 100%;
   padding: 1.2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -276,7 +276,7 @@
 
 .search-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 15px 35px rgba(72, 187, 120, 0.4);
 }
 
 .schedule-section {
@@ -424,7 +424,7 @@
 }
 
 .empty-cell:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(72, 187, 120, 0.1);
 }
 
 .empty-slot-hint {
@@ -436,7 +436,7 @@
 
 .empty-cell:hover .empty-slot-hint {
   opacity: 1;
-  color: #667eea;
+  color: #48bb78;
 }
 
 .empty-cell.past-slot {
@@ -575,14 +575,14 @@
 .booking-modal-content input:focus,
 .booking-modal-content select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
 }
 
 .submit-booking-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -596,7 +596,7 @@
 
 .submit-booking-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
 }
 
 .sparring-brand {

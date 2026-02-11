@@ -132,13 +132,13 @@
 
 .login-form .form-group input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
 }
 
 .login-form .submit-btn {
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -151,7 +151,7 @@
 
 .login-form .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
 }
 
 .form-footer {
@@ -161,7 +161,7 @@
 }
 
 .form-footer a {
-  color: #667eea;
+  color: #48bb78;
   text-decoration: none;
   font-weight: 600;
 }

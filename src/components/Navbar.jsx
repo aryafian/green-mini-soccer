@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './Navbar.css'
 
-function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, onHistoryClick, currentUser, onLogout }) {
+function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, onHistoryClick, onTransactionClick, currentUser, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -69,6 +69,15 @@ function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, on
     setIsMenuOpen(false)
   }
 
+  const handleTransactionClick = () => {
+    if (onTransactionClick) {
+      onTransactionClick()
+    }
+    setIsMenuOpen(false)
+  }
+
+  const isAdmin = currentUser && currentUser.email === 'aryafian232@gmail.com'
+
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
@@ -91,6 +100,11 @@ function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, on
           <button onClick={handleContactClick} className="nav-btn">
             Our Contact
           </button>
+          {isAdmin && (
+            <button onClick={handleTransactionClick} className="nav-btn">
+              Transaction
+            </button>
+          )}
         </div>
 
         <div className="nav-right">

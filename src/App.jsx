@@ -7,12 +7,13 @@ import LoginModal from './components/LoginModal'
 import FindAGame from './components/FindAGame'
 import OurContact from './components/OurContact'
 import History from './components/History'
+import Transaction from './components/Transaction'
 import './App.css'
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [currentBgImage, setCurrentBgImage] = useState(0)
-  const [currentPage, setCurrentPage] = useState('home') // 'home', 'find-game', 'our-contact', 'history'
+  const [currentPage, setCurrentPage] = useState('home') // 'home', 'find-game', 'our-contact', 'history', 'transaction'
   const [currentUser, setCurrentUser] = useState(null)
 
   // Listen to Firebase auth state changes
@@ -80,6 +81,10 @@ function App() {
     setCurrentPage('history')
   }
 
+  const navigateToTransaction = () => {
+    setCurrentPage('transaction')
+  }
+
   const navigateToHome = () => {
     setCurrentPage('home')
     // Scroll to top setelah navigasi
@@ -97,6 +102,7 @@ function App() {
           onHomeClick={navigateToHome}
           onContactClick={navigateToContact}
           onHistoryClick={navigateToHistory}
+          onTransactionClick={navigateToTransaction}
           currentUser={currentUser}
           onLogout={handleLogout}
         />
@@ -124,6 +130,7 @@ function App() {
           onHomeClick={navigateToHome}
           onContactClick={navigateToContact}
           onHistoryClick={navigateToHistory}
+          onTransactionClick={navigateToTransaction}
           currentUser={currentUser}
           onLogout={handleLogout}
         />
@@ -149,10 +156,38 @@ function App() {
           onHomeClick={navigateToHome}
           onContactClick={navigateToContact}
           onHistoryClick={navigateToHistory}
+          onTransactionClick={navigateToTransaction}
           currentUser={currentUser}
           onLogout={handleLogout}
         />
         <History 
+          onBack={navigateToHome}
+          currentUser={currentUser}
+          backgroundImage={backgroundImages[currentBgImage]}
+        />
+        <LoginModal 
+          isOpen={isLoginOpen} 
+          onClose={() => setIsLoginOpen(false)}
+          onLogin={handleLogin}
+        />
+      </div>
+    )
+  }
+
+  if (currentPage === 'transaction') {
+    return (
+      <div className="app">
+        <Navbar 
+          onLoginClick={() => setIsLoginOpen(true)} 
+          onFindGameClick={navigateToFindGame}
+          onHomeClick={navigateToHome}
+          onContactClick={navigateToContact}
+          onHistoryClick={navigateToHistory}
+          onTransactionClick={navigateToTransaction}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
+        <Transaction 
           onBack={navigateToHome}
           currentUser={currentUser}
           backgroundImage={backgroundImages[currentBgImage]}
@@ -174,6 +209,7 @@ function App() {
         onHomeClick={navigateToHome}
         onContactClick={navigateToContact}
         onHistoryClick={navigateToHistory}
+        onTransactionClick={navigateToTransaction}
         currentUser={currentUser}
         onLogout={handleLogout}
       />

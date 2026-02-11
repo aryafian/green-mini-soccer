@@ -49,7 +49,7 @@ function Hero({ backgroundImage, onBookNowClick }) {
         <div className="hero-tagline">
           <p>Temukan, jadwalkan, dan mulai</p>
           <p>olahraga tanpa ribet.</p>
-          <h2 className="brand">SPARRING</h2>
+          <h2 className="brand">LETS GO!</h2>
           <button className="book-now-btn" onClick={onBookNowClick}>Book Now</button>
         </div>
       </div>

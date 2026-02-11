@@ -10,7 +10,9 @@
 }
 
 .navbar.scrolled {
-  background: rgba(20, 40, 70, 0.9);
+  background: rgba(72, 187, 120, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -148,7 +150,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -205,7 +207,7 @@
   padding: 1rem;
   background: transparent;
   border: none;
-  color: #667eea;
+  color: #48bb78;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;

@@ -29,7 +29,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 60, 114, 0.7) 0%, rgba(42, 82, 152, 0.5) 100%);
+  background: linear-gradient(135deg, rgba(20, 80, 50, 0.7) 0%, rgba(34, 139, 84, 0.5) 100%);
 }
 
 .page-background-next {
@@ -149,6 +149,51 @@
   margin: 0.3rem 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   line-height: 1.4;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.social-link:hover {
+  transform: translateX(5px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.social-link.instagram:hover {
+  background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+  border-color: #833ab4;
+}
+
+.social-link.tiktok:hover {
+  background: #000000;
+  border-color: #00f2ea;
+}
+
+.social-link svg {
+  flex-shrink: 0;
+}
+
+.social-link span {
+  font-size: 0.9rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .map-section {
