@@ -28,7 +28,7 @@ function Features() {
     {
       id: 'find-game',
       icon: '🎮',
-      title: 'Find A Game',
+      title: 'Book Now',
       description: 'Temukan pertandingan futsal sesuai dengan lokasi dan jadwal Anda'
     },
     {

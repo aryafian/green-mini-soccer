@@ -16,11 +16,20 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0;
-  transition: opacity 0.5s ease;
 }
 
-.hero-background.loaded {
+.hero-background-base {
+  opacity: 1;
+  z-index: 0;
+}
+
+.hero-background-next {
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-background-next.active {
   opacity: 1;
 }
 
@@ -138,60 +147,6 @@
   transform: translateY(-1px);
 }
 
-.bg-change-btn {
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: white;
-}
-
-.bg-change-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1) rotate(15deg);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-}
-
-.scroll-indicator {
-  position: absolute;
-  bottom: 3rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-.scroll-arrow {
-  width: 30px;
-  height: 50px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 25px;
-  position: relative;
-}
-
-.scroll-arrow::before {
-  content: '';
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  background: white;
-  border-radius: 50%;
-  animation: scroll 2s infinite;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -209,20 +164,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes scroll {
-  0% {
-    opacity: 0;
-    top: 10px;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    top: 30px;
   }
 }
 
@@ -246,16 +187,5 @@
 
   .brand {
     font-size: 2.5rem;
-  }
-
-  .bg-change-btn {
-    width: 50px;
-    height: 50px;
-    bottom: 1.5rem;
-    left: 1.5rem;
-  }
-
-  .scroll-indicator {
-    display: none;
   }
 }

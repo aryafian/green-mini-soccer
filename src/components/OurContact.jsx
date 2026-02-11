@@ -1,8 +1,40 @@
+import { useState, useEffect } from 'react'
 import './OurContact.css'
 
-function OurContact({ onBack }) {
+function OurContact({ onBack, backgroundImage }) {
+  const [currentBg, setCurrentBg] = useState(backgroundImage)
+  const [nextBg, setNextBg] = useState(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  useEffect(() => {
+    if (backgroundImage !== currentBg) {
+      const img = new Image()
+      img.src = backgroundImage
+      img.onload = () => {
+        setNextBg(backgroundImage)
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setCurrentBg(backgroundImage)
+          setNextBg(null)
+          setIsTransitioning(false)
+        }, 3000)
+      }
+    }
+  }, [backgroundImage, currentBg])
+
   return (
     <div className="our-contact-page">
+      <div 
+        className="page-background page-background-base"
+        style={{ backgroundImage: `url(${currentBg})` }}
+      />
+      {nextBg && (
+        <div 
+          className={`page-background page-background-next ${isTransitioning ? 'active' : ''}`}
+          style={{ backgroundImage: `url(${nextBg})` }}
+        />
+      )}
+      <div className="page-overlay" />
       <div className="our-contact-content">
         <div className="contact-header">
           <h1 className="contact-title">Our Contact</h1>

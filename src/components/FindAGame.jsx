@@ -3,7 +3,7 @@ import { collection, addDoc, query, onSnapshot, orderBy } from 'firebase/firesto
 import { db } from '../firebase'
 import './FindAGame.css'
 
-function FindAGame({ onBack, currentUser, onLoginClick }) {
+function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   const [selectedDate, setSelectedDate] = useState(null)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
@@ -11,6 +11,26 @@ function FindAGame({ onBack, currentUser, onLoginClick }) {
   const [bookings, setBookings] = useState([])
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [selectedSlot, setSelectedSlot] = useState(null)
+  const [currentBg, setCurrentBg] = useState(backgroundImage)
+  const [nextBg, setNextBg] = useState(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  // Handle background transitions
+  useEffect(() => {
+    if (backgroundImage !== currentBg) {
+      const img = new Image()
+      img.src = backgroundImage
+      img.onload = () => {
+        setNextBg(backgroundImage)
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setCurrentBg(backgroundImage)
+          setNextBg(null)
+          setIsTransitioning(false)
+        }, 3000)
+      }
+    }
+  }, [backgroundImage, currentBg])
 
   // Listen to Firestore bookings collection in realtime
   useEffect(() => {
@@ -158,9 +178,20 @@ function FindAGame({ onBack, currentUser, onLoginClick }) {
 
   return (
     <div className="find-a-game-page">
+      <div 
+        className="page-background page-background-base"
+        style={{ backgroundImage: `url(${currentBg})` }}
+      />
+      {nextBg && (
+        <div 
+          className={`page-background page-background-next ${isTransitioning ? 'active' : ''}`}
+          style={{ backgroundImage: `url(${nextBg})` }}
+        />
+      )}
+      <div className="page-overlay" />
       <div className="find-a-game-content">
         <div className="find-header">
-          <h1 className="find-title">Find A Game</h1>
+          <h1 className="find-title">Book Now</h1>
           <p className="find-subtitle">
             Atur filter, temukan partner sesuai level, lokasi, juga langsung join.<br />
             Main jadi gampang, nggak perlu nunggu temen lagi!

@@ -86,7 +86,7 @@ function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, cu
             Home
           </button>
           <button onClick={handleFindGameClick} className="nav-btn">
-            Find A Game
+            Booking
           </button>
           <button onClick={handleContactClick} className="nav-btn">
             Our Contact

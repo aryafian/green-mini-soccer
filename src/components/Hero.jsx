@@ -1,22 +1,42 @@
 import { useEffect, useState } from 'react'
 import './Hero.css'
 
-function Hero({ backgroundImage, onChangeBackground }) {
-  const [loaded, setLoaded] = useState(false)
+function Hero({ backgroundImage }) {
+  const [currentBg, setCurrentBg] = useState(backgroundImage)
+  const [nextBg, setNextBg] = useState(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
-    setLoaded(false)
-    const img = new Image()
-    img.src = backgroundImage
-    img.onload = () => setLoaded(true)
-  }, [backgroundImage])
+    if (backgroundImage !== currentBg) {
+      // Preload next image
+      const img = new Image()
+      img.src = backgroundImage
+      img.onload = () => {
+        setNextBg(backgroundImage)
+        setIsTransitioning(true)
+        
+        // After transition completes, swap layers
+        setTimeout(() => {
+          setCurrentBg(backgroundImage)
+          setNextBg(null)
+          setIsTransitioning(false)
+        }, 3000) // Match CSS transition duration
+      }
+    }
+  }, [backgroundImage, currentBg])
 
   return (
     <section className="hero">
       <div 
-        className={`hero-background ${loaded ? 'loaded' : ''}`}
-        style={{ backgroundImage: `url(${backgroundImage})` }}
+        className="hero-background hero-background-base"
+        style={{ backgroundImage: `url(${currentBg})` }}
       />
+      {nextBg && (
+        <div 
+          className={`hero-background hero-background-next ${isTransitioning ? 'active' : ''}`}
+          style={{ backgroundImage: `url(${nextBg})` }}
+        />
+      )}
       <div className="hero-overlay" />
       
       <div className="hero-content">
@@ -32,18 +52,6 @@ function Hero({ backgroundImage, onChangeBackground }) {
           <h2 className="brand">SPARRING</h2>
           <button className="book-now-btn">Book Now</button>
         </div>
-      </div>
-
-      <button className="bg-change-btn" onClick={onChangeBackground} title="Ganti Background">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <circle cx="8.5" cy="8.5" r="1.5"></circle>
-          <polyline points="21 15 16 10 5 21"></polyline>
-        </svg>
-      </button>
-
-      <div className="scroll-indicator">
-        <div className="scroll-arrow"></div>
       </div>
     </section>
   )

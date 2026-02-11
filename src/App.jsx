@@ -36,6 +36,15 @@ function App() {
     return () => unsubscribe()
   }, [])
 
+  // Auto-change background every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length)
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   const handleLogin = () => {
     setIsLoginOpen(false)
   }
@@ -57,10 +66,6 @@ function App() {
     'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2000',
     'https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=2000'
   ]
-
-  const changeBackground = () => {
-    setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length)
-  }
 
   const navigateToFindGame = () => {
     setCurrentPage('find-game')
@@ -93,6 +98,7 @@ function App() {
           onBack={navigateToHome} 
           currentUser={currentUser}
           onLoginClick={() => setIsLoginOpen(true)}
+          backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
           isOpen={isLoginOpen} 
@@ -114,7 +120,10 @@ function App() {
           currentUser={currentUser}
           onLogout={handleLogout}
         />
-        <OurContact onBack={navigateToHome} />
+        <OurContact 
+          onBack={navigateToHome}
+          backgroundImage={backgroundImages[currentBgImage]}
+        />
         <LoginModal 
           isOpen={isLoginOpen} 
           onClose={() => setIsLoginOpen(false)}
@@ -136,7 +145,6 @@ function App() {
       />
       <Hero 
         backgroundImage={backgroundImages[currentBgImage]}
-        onChangeBackground={changeBackground}
       />
       <LoginModal 
         isOpen={isLoginOpen} 

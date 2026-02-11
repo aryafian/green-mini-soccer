@@ -1,17 +1,28 @@
 .our-contact-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #304b7a 100%),
-              url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000');
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
   padding: 6rem 2rem 4rem;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-.our-contact-page::before {
+.page-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.page-background-base {
+  opacity: 1;
+  z-index: 0;
+}
+
+.page-background::before {
   content: '';
   position: absolute;
   top: 0;
@@ -19,7 +30,27 @@
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, rgba(30, 60, 114, 0.85) 0%, rgba(42, 82, 152, 0.75) 100%);
+}
+
+.page-background-next {
+  opacity: 0;
   z-index: 1;
+  transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-background-next.active {
+  opacity: 1;
+}
+
+.page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(30, 60, 114, 0.85) 0%, rgba(42, 82, 152, 0.75) 100%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .our-contact-content {
