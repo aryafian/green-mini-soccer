@@ -127,7 +127,7 @@ function History({ onBack, currentUser, backgroundImage }) {
                     <div className="booking-card-header">
                       <h3 className="booking-team-name">{booking.name}</h3>
                       <span className={`booking-status ${isPast ? 'completed' : 'active'}`}>
-                        {isPast ? 'Selesai' : 'Aktif'}
+                        {isPast ? 'Selesai' : 'Akan Datang'}
                       </span>
                     </div>
                   <div className="booking-details">

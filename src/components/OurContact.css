@@ -370,3 +370,11 @@
     min-height: 250px;
   }
 }
+
+.powered-by {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  padding: 1.5rem 0 0.5rem;
+  margin: 0;
+}

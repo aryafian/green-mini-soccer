@@ -56,7 +56,7 @@ function OurContact({ onBack, backgroundImage }) {
 
               <div className="info-item">
                 <div className="info-icon"></div>
-                <h3>Sosial Media</h3>
+                <h3>Social Media</h3>
                 <div className="social-links">
                   <a href="https://instagram.com/greenminisoccer" target="_blank" rel="noopener noreferrer" className="social-link instagram">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -90,7 +90,7 @@ function OurContact({ onBack, backgroundImage }) {
             </div>
 
             <div className="map-section">
-              <h3 className="map-title"></h3>
+              <h3 className="map-title">Lokasi Kami</h3>
               <div className="map-container">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12125.9289778068!2d110.36662804999999!3d-7.0693934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7089007517809b%3A0x421fce06070c6ddb!2sGREEN%20MINI%20SOCCER!5e1!3m2!1sid!2sid!4v1770825268269!5m2!1sid!2sid"
