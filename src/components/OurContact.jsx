@@ -49,29 +49,28 @@ function OurContact({ onBack, backgroundImage }) {
             <div className="info-item">
               <div className="info-icon"></div>
               <h3>Alamat</h3>
-              <p>Jl. Sparring Sports No. 123</p>
-              <p>Jakarta Selatan, 12345</p>
+              <p>Ngijo, Kecamatan Gunungpati</p>
+              <p>Kota Semarang, Jawa Tengah 50228</p>
             </div>
 
             <div className="info-item">
               <div className="info-icon"></div>
               <h3>Email</h3>
-              <p>info@sparring.com</p>
-              <p>support@sparring.com</p>
+              <p>info@greenminisoccer.com</p>
+              <p>support@greenminisoccer.com</p>
             </div>
 
             <div className="info-item">
               <div className="info-icon"></div>
               <h3>Telepon</h3>
-              <p>+62 812 3456 7890</p>
-              <p>+62 821 9876 5432</p>
+              <p>+62 812 2795 0651</p>
             </div>
 
             <div className="info-item">
               <div className="info-icon"></div>
               <h3>Jam Operasional</h3>
-              <p>Senin - Jumat: 08:00 - 21:00</p>
-              <p>Sabtu - Minggu: 06:00 - 22:00</p>
+              <p>Senin - Jumat: 06:00 - 23:00</p>
+              <p>Sabtu - Minggu: 06:00 - 23:00</p>
             </div>
           </div>
         </div>
