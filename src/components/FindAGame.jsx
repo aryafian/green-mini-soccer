@@ -69,13 +69,12 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   }
 
   const handleSlotClick = (date, timeIndex) => {
-    // Check if date is in the past
-    const selectedDateObj = new Date(date.year, date.month, date.date)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // Check if time slot has passed
+    const slotDateTime = new Date(date.year, date.month, date.date, 6 + timeIndex)
+    const now = new Date()
     
-    if (selectedDateObj < today) {
-      alert('Tidak dapat booking untuk tanggal yang sudah lewat!')
+    if (slotDateTime < now) {
+      alert('Tidak dapat booking untuk waktu yang sudah terlewat!')
       return
     }
     
@@ -303,6 +302,11 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
                                 b => b.time < timeIndex && b.time + b.duration > timeIndex
                               )
                               
+                              // Check if this time slot has passed
+                              const slotDateTime = new Date(selectedDate.year, selectedDate.month, selectedDate.date, 6 + timeIndex)
+                              const now = new Date()
+                              const isPastSlot = slotDateTime < now
+                              
                               return (
                                 <tr key={time}>
                                   <td className="time-cell">{time}</td>
@@ -321,10 +325,10 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
                                     </td>
                                   ) : (
                                     <td 
-                                      className="empty-cell" 
-                                      onClick={() => handleSlotClick(selectedDate, timeIndex)}
+                                      className={`empty-cell ${isPastSlot ? 'past-slot' : ''}`}
+                                      onClick={() => !isPastSlot && handleSlotClick(selectedDate, timeIndex)}
                                     >
-                                      <div className="empty-slot-hint">+</div>
+                                      <div className="empty-slot-hint">{isPastSlot ? '—' : '+'}</div>
                                     </td>
                                   )}
                                 </tr>

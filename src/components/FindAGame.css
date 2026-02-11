@@ -439,6 +439,25 @@
   color: #667eea;
 }
 
+.empty-cell.past-slot {
+  background: rgba(0, 0, 0, 0.03);
+  cursor: not-allowed;
+}
+
+.empty-cell.past-slot:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.empty-cell.past-slot .empty-slot-hint {
+  opacity: 0.4;
+  color: #a0aec0;
+}
+
+.empty-cell.past-slot:hover .empty-slot-hint {
+  opacity: 0.4;
+  color: #a0aec0;
+}
+
 .booking-cell {
   background: #2f855a;
   color: white;

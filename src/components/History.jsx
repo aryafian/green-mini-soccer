@@ -117,12 +117,19 @@ function History({ onBack, currentUser, backgroundImage }) {
             </div>
           ) : (
             <div className="bookings-list">
-              {bookings.map((booking) => (
-                <div key={booking.id} className="booking-card">
-                  <div className="booking-card-header">
-                    <h3 className="booking-team-name">{booking.name}</h3>
-                    <span className="booking-status">Aktif</span>
-                  </div>
+              {bookings.map((booking) => {
+                // Check if booking has passed
+                const bookingEndTime = new Date(booking.date.year, booking.date.month, booking.date.date, 6 + booking.time + booking.duration)
+                const isPast = bookingEndTime < new Date()
+                
+                return (
+                  <div key={booking.id} className="booking-card">
+                    <div className="booking-card-header">
+                      <h3 className="booking-team-name">{booking.name}</h3>
+                      <span className={`booking-status ${isPast ? 'completed' : 'active'}`}>
+                        {isPast ? 'Selesai' : 'Aktif'}
+                      </span>
+                    </div>
                   <div className="booking-details">
                     <div className="booking-detail-item">
                       <span className="detail-icon">📅</span>
@@ -154,7 +161,8 @@ function History({ onBack, currentUser, backgroundImage }) {
                     </div>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
