@@ -80,11 +80,6 @@ function LoginModal({ isOpen, onClose, onLogin }) {
     }
   }
 
-  const handleSignupClick = (e) => {
-    e.preventDefault()
-    alert('Fitur registrasi akan segera hadir! Silakan hubungi admin untuk membuat akun.')
-  }
-
   if (!isOpen) return null
 
   return (
@@ -136,9 +131,6 @@ function LoginModal({ isOpen, onClose, onLogin }) {
             />
           </div>
           <button type="submit" className="submit-btn">Login</button>
-          <p className="form-footer">
-            Belum punya akun? <a href="#" onClick={handleSignupClick}>Daftar di sini</a>
-          </p>
         </form>
       </div>
     </div>
