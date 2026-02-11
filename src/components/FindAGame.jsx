@@ -14,6 +14,8 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   const [currentBg, setCurrentBg] = useState(backgroundImage)
   const [nextBg, setNextBg] = useState(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isLoadingBookings, setIsLoadingBookings] = useState(true)
+  const [bookingsError, setBookingsError] = useState(null)
 
   // Handle background transitions
   useEffect(() => {
@@ -34,6 +36,9 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
 
   // Listen to Firestore bookings collection in realtime
   useEffect(() => {
+    setIsLoadingBookings(true)
+    setBookingsError(null)
+    
     const q = query(collection(db, 'bookings'), orderBy('bookedAt', 'desc'))
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -45,8 +50,16 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
         })
       })
       setBookings(bookingsData)
+      setIsLoadingBookings(false)
+      console.log('Berhasil memuat', bookingsData.length, 'booking')
     }, (error) => {
       console.error('Error fetching bookings:', error)
+      setBookingsError(error.message)
+      setIsLoadingBookings(false)
+      
+      if (error.code === 'permission-denied') {
+        alert('Tidak dapat memuat data booking. Pastikan Firestore rules mengizinkan read tanpa autentikasi.')
+      }
     })
 
     // Cleanup subscription on unmount
@@ -270,7 +283,15 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
 
             {showSchedule && selectedDate && (
               <div className="schedule-section">
-                {(() => {
+                {isLoadingBookings ? (
+                  <div className="loading-message" style={{textAlign: 'center', padding: '2rem', color: '#667eea'}}>
+                    Memuat data booking...
+                  </div>
+                ) : bookingsError ? (
+                  <div className="error-message" style={{textAlign: 'center', padding: '2rem', color: '#e53e3e'}}>
+                    Error: {bookingsError}
+                  </div>
+                ) : (() => {
                   const dayInfo = getDayInfo(selectedDate)
                   const dayBookings = getBookingsForDate(selectedDate)
                   
