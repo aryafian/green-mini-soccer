@@ -6,12 +6,13 @@ import Hero from './components/Hero'
 import LoginModal from './components/LoginModal'
 import FindAGame from './components/FindAGame'
 import OurContact from './components/OurContact'
+import History from './components/History'
 import './App.css'
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [currentBgImage, setCurrentBgImage] = useState(0)
-  const [currentPage, setCurrentPage] = useState('home') // 'home', 'find-game', 'our-contact'
+  const [currentPage, setCurrentPage] = useState('home') // 'home', 'find-game', 'our-contact', 'history'
   const [currentUser, setCurrentUser] = useState(null)
 
   // Listen to Firebase auth state changes
@@ -40,7 +41,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length)
-    }, 30000)
+    }, 10000)
 
     return () => clearInterval(interval)
   }, [])
@@ -75,6 +76,10 @@ function App() {
     setCurrentPage('our-contact')
   }
 
+  const navigateToHistory = () => {
+    setCurrentPage('history')
+  }
+
   const navigateToHome = () => {
     setCurrentPage('home')
     // Scroll to top setelah navigasi
@@ -91,6 +96,7 @@ function App() {
           onFindGameClick={navigateToFindGame}
           onHomeClick={navigateToHome}
           onContactClick={navigateToContact}
+          onHistoryClick={navigateToHistory}
           currentUser={currentUser}
           onLogout={handleLogout}
         />
@@ -117,11 +123,38 @@ function App() {
           onFindGameClick={navigateToFindGame}
           onHomeClick={navigateToHome}
           onContactClick={navigateToContact}
+          onHistoryClick={navigateToHistory}
           currentUser={currentUser}
           onLogout={handleLogout}
         />
         <OurContact 
           onBack={navigateToHome}
+          backgroundImage={backgroundImages[currentBgImage]}
+        />
+        <LoginModal 
+          isOpen={isLoginOpen} 
+          onClose={() => setIsLoginOpen(false)}
+          onLogin={handleLogin}
+        />
+      </div>
+    )
+  }
+
+  if (currentPage === 'history') {
+    return (
+      <div className="app">
+        <Navbar 
+          onLoginClick={() => setIsLoginOpen(true)} 
+          onFindGameClick={navigateToFindGame}
+          onHomeClick={navigateToHome}
+          onContactClick={navigateToContact}
+          onHistoryClick={navigateToHistory}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
+        <History 
+          onBack={navigateToHome}
+          currentUser={currentUser}
           backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
@@ -140,11 +173,13 @@ function App() {
         onFindGameClick={navigateToFindGame}
         onHomeClick={navigateToHome}
         onContactClick={navigateToContact}
+        onHistoryClick={navigateToHistory}
         currentUser={currentUser}
         onLogout={handleLogout}
       />
       <Hero 
         backgroundImage={backgroundImages[currentBgImage]}
+        onBookNowClick={navigateToFindGame}
       />
       <LoginModal 
         isOpen={isLoginOpen} 

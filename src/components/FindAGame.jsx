@@ -27,7 +27,7 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
           setCurrentBg(backgroundImage)
           setNextBg(null)
           setIsTransitioning(false)
-        }, 3000)
+        }, 5000) // Match CSS transition duration (5s)
       }
     }
   }, [backgroundImage, currentBg])
@@ -54,11 +54,31 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   }, [])
 
   const handleDateClick = (date) => {
+    // Check if date is in the past
+    const selectedDateObj = new Date(date.year, date.month, date.date)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    if (selectedDateObj < today) {
+      alert('Tidak dapat memilih tanggal yang sudah lewat!')
+      return
+    }
+    
     setSelectedDate(date)
     setShowSchedule(true)
   }
 
   const handleSlotClick = (date, timeIndex) => {
+    // Check if date is in the past
+    const selectedDateObj = new Date(date.year, date.month, date.date)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    if (selectedDateObj < today) {
+      alert('Tidak dapat booking untuk tanggal yang sudah lewat!')
+      return
+    }
+    
     // Check if user is logged in
     if (!currentUser) {
       alert('Silakan login terlebih dahulu untuk melakukan booking!')
@@ -228,11 +248,18 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
                     const date = i + 1
                     const isToday = date === today && currentMonth === todayMonth && currentYear === todayYear
                     const isSelected = selectedDate && selectedDate.date === date && selectedDate.month === currentMonth && selectedDate.year === currentYear
+                    
+                    // Check if date is in the past
+                    const dateObj = new Date(currentYear, currentMonth, date)
+                    const todayObj = new Date()
+                    todayObj.setHours(0, 0, 0, 0)
+                    const isPast = dateObj < todayObj
+                    
                     return (
                       <div 
                         key={date} 
-                        className={`calendar-date ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleDateClick({ date, month: currentMonth, year: currentYear })}
+                        className={`calendar-date ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isPast ? 'disabled' : ''}`}
+                        onClick={() => !isPast && handleDateClick({ date, month: currentMonth, year: currentYear })}
                       >
                         {date}
                       </div>
@@ -349,8 +376,6 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
           </div>
         </div>
       )}
-
-      <div className="sparring-brand">SPARRING</div>
     </div>
   )
 }

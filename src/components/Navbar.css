@@ -200,6 +200,24 @@
   margin: 0;
 }
 
+.history-btn {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.history-btn:hover {
+  background: #eef2ff;
+}
+
 .logout-btn {
   width: 100%;
   padding: 1rem;

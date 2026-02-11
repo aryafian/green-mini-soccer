@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './Navbar.css'
 
-function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, currentUser, onLogout }) {
+function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, onHistoryClick, currentUser, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -111,6 +111,9 @@ function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, cu
                     <strong>{currentUser.name}</strong>
                     <p>{currentUser.email}</p>
                   </div>
+                  <button className="history-btn" onClick={(e) => { e.stopPropagation(); onHistoryClick(); setShowUserMenu(false); }}>
+                    History
+                  </button>
                   <button className="logout-btn" onClick={(e) => { e.stopPropagation(); onLogout(); setShowUserMenu(false); }}>
                     Logout
                   </button>

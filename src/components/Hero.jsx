@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './Hero.css'
 
-function Hero({ backgroundImage }) {
+function Hero({ backgroundImage, onBookNowClick }) {
   const [currentBg, setCurrentBg] = useState(backgroundImage)
   const [nextBg, setNextBg] = useState(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -20,7 +20,7 @@ function Hero({ backgroundImage }) {
           setCurrentBg(backgroundImage)
           setNextBg(null)
           setIsTransitioning(false)
-        }, 3000) // Match CSS transition duration
+        }, 5000) // Match CSS transition duration (5s)
       }
     }
   }, [backgroundImage, currentBg])
@@ -50,7 +50,7 @@ function Hero({ backgroundImage }) {
           <p>Temukan, jadwalkan, dan mulai</p>
           <p>olahraga tanpa ribet.</p>
           <h2 className="brand">SPARRING</h2>
-          <button className="book-now-btn">Book Now</button>
+          <button className="book-now-btn" onClick={onBookNowClick}>Book Now</button>
         </div>
       </div>
     </section>
