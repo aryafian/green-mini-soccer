@@ -1,0 +1,218 @@
+.our-contact-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #304b7a 100%),
+              url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000');
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.our-contact-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(30, 60, 114, 0.85) 0%, rgba(42, 82, 152, 0.75) 100%);
+  z-index: 1;
+}
+
+.our-contact-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.contact-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(3rem, 8vw, 6rem);
+  color: white;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 0.1s forwards;
+}
+
+.contact-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 0.2s forwards;
+}
+
+.contact-info-container {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 0.3s forwards;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.info-item {
+  text-align: center;
+  padding: 0 2rem;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.info-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 60%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.info-item:hover {
+  transform: translateY(-5px);
+}
+
+.info-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.info-item h3 {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-weight: 600;
+}
+
+.info-item p {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.9rem;
+  margin: 0.3rem 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
+}
+
+.sparring-brand {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2.5rem;
+  color: white;
+  opacity: 0;
+  font-style: italic;
+  letter-spacing: 0.3rem;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  animation: fadeIn 0.8s ease 1s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 968px) {
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 0;
+  }
+
+  .info-item:nth-child(2n)::after {
+    display: none;
+  }
+
+  .info-item:nth-child(1)::after,
+  .info-item:nth-child(2)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .our-contact-page {
+    padding: 5rem 1rem 3rem;
+  }
+
+  .contact-title {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+
+  .contact-subtitle {
+    font-size: 1rem;
+  }
+
+  .contact-info-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem 0;
+  }
+
+  .info-item {
+    padding: 1.5rem 1rem;
+  }
+
+  .info-item::after {
+    display: none !important;
+  }
+
+  .info-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .sparring-brand {
+    font-size: 2rem;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+}

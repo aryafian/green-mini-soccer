@@ -1,0 +1,261 @@
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.hero-background.loaded {
+  opacity: 1;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(30, 60, 114, 0.7) 0%, rgba(42, 82, 152, 0.5) 100%);
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, transparent 100%),
+    radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-left: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 700;
+  color: white;
+  line-height: 0.9;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
+  letter-spacing: 0.02em;
+}
+
+.title-line {
+  display: block;
+  animation: fadeInUp 0.8s ease forwards;
+  opacity: 0;
+}
+
+.title-line:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.title-line:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.title-line:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.hero-tagline {
+  position: absolute;
+  bottom: 4rem;
+  right: 4rem;
+  text-align: right;
+  animation: fadeIn 1s ease 0.8s forwards;
+  opacity: 0;
+}
+
+.hero-tagline p {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  font-weight: 300;
+  margin: 0.2rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.brand {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 3.5rem;
+  color: white;
+  margin-top: 0.5rem;
+  letter-spacing: 0.3rem;
+  font-style: italic;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+}
+
+.book-now-btn {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.8rem;
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  animation: fadeIn 1s ease 1s both;
+  opacity: 1;
+}
+
+.book-now-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+.book-now-btn:active {
+  background: white;
+  color: #142846;
+  transform: translateY(-1px);
+}
+
+.bg-change-btn {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.bg-change-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.scroll-arrow {
+  width: 30px;
+  height: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 25px;
+  position: relative;
+}
+
+.scroll-arrow::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  animation: scroll 2s infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scroll {
+  0% {
+    opacity: 0;
+    top: 10px;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 15vw, 6rem);
+  }
+
+  .hero-tagline {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin-top: 3rem;
+    text-align: left;
+  }
+
+  .brand {
+    font-size: 2.5rem;
+  }
+
+  .bg-change-btn {
+    width: 50px;
+    height: 50px;
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+
+  .scroll-indicator {
+    display: none;
+  }
+}
