@@ -1,0 +1,276 @@
+.about-facilities-section {
+  min-height: 100vh;
+  padding: 8rem 2rem 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.8s ease forwards;
+  opacity: 0;
+}
+
+.section-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.8;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.about-text {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 5px solid #48bb78;
+  animation: fadeIn 0.8s ease 0.3s forwards;
+  opacity: 0;
+}
+
+.about-text h3 {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+.about-text p:last-child {
+  margin-bottom: 0;
+}
+
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.facility-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.facility-card:nth-child(1) { animation-delay: 0.5s; }
+.facility-card:nth-child(2) { animation-delay: 0.6s; }
+.facility-card:nth-child(3) { animation-delay: 0.7s; }
+.facility-card:nth-child(4) { animation-delay: 0.8s; }
+.facility-card:nth-child(5) { animation-delay: 0.9s; }
+.facility-card:nth-child(6) { animation-delay: 1s; }
+
+.facility-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(72, 187, 120, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(72, 187, 120, 0.5);
+}
+
+.facility-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.facility-card:hover .facility-icon {
+  transform: scale(1.2) rotate(10deg);
+}
+
+.facility-card h4 {
+  font-size: 1.4rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.facility-card p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+@media (max-width: 968px) {
+  .about-facilities-section {
+    padding: 4rem 1.5rem;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .about-text {
+    padding: 2rem;
+  }
+
+  .about-text h3 {
+    font-size: 1.7rem;
+  }
+
+  .about-text p {
+    font-size: 1rem;
+  }
+
+  .facilities-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .facility-card {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-facilities-section {
+    padding: 3rem 1rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .about-header {
+    margin-bottom: 3rem;
+  }
+
+  .about-content {
+    gap: 3rem;
+  }
+
+  .about-text {
+    padding: 1.5rem;
+  }
+
+  .about-text h3 {
+    font-size: 1.5rem;
+  }
+
+  .facilities-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .facility-card {
+    padding: 1.8rem;
+  }
+
+  .facility-icon {
+    font-size: 3rem;
+  }
+
+  .facility-card h4 {
+    font-size: 1.2rem;
+  }
+
+  .facility-card p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-facilities-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .about-text {
+    padding: 1.2rem;
+  }
+
+  .about-text h3 {
+    font-size: 1.3rem;
+  }
+
+  .about-text p {
+    font-size: 0.95rem;
+  }
+
+  .facility-card {
+    padding: 1.5rem;
+  }
+
+  .facility-icon {
+    font-size: 2.5rem;
+  }
+
+  .facility-card h4 {
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

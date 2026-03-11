@@ -1,0 +1,365 @@
+.news-detail-page {
+  min-height: 100vh;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.page-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.page-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(20, 80, 50, 0.7) 0%, rgba(34, 139, 84, 0.5) 100%);
+  z-index: 1;
+}
+
+.news-detail-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  font-family: 'Poppins', sans-serif;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-5px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.news-detail-article {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease 0.2s forwards;
+  opacity: 0;
+}
+
+.article-header {
+  padding: 3rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.article-category {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+}
+
+.article-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #718096;
+  font-size: 1rem;
+}
+
+.article-date {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.article-image-wrapper {
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  background: #f7fafc;
+}
+
+.article-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-content {
+  padding: 3rem;
+}
+
+/* Article Sections - SEO Friendly Structure */
+.article-section {
+  margin-bottom: 3rem;
+}
+
+.article-section:first-of-type {
+  margin-top: 0;
+}
+
+.section-heading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.section-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+  border-radius: 2px;
+}
+
+.section-paragraph {
+  font-size: 1.1rem;
+  color: #4a5568;
+  line-height: 1.9;
+  margin-bottom: 1.2rem;
+  text-align: justify;
+}
+
+.section-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Fallback for old content */
+.article-text {
+  font-size: 1.2rem;
+  color: #4a5568;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.article-details,
+.article-benefits,
+.article-terms {
+  margin-top: 2.5rem;
+  padding: 2rem;
+  background: rgba(72, 187, 120, 0.05);
+  border-left: 4px solid #48bb78;
+  border-radius: 10px;
+}
+
+.article-details h3,
+.article-benefits h3,
+.article-terms h3 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.article-details p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  line-height: 1.8;
+}
+
+.article-benefits ul,
+.article-terms ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.article-benefits li,
+.article-terms li {
+  font-size: 1.05rem;
+  color: #4a5568;
+  line-height: 1.8;
+  margin-bottom: 0.8rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.article-benefits li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #48bb78;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.article-terms li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #48bb78;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .news-detail-page {
+    padding: 5rem 1rem 3rem;
+  }
+
+  .article-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .article-title {
+    font-size: 2rem;
+  }
+
+  .article-image-wrapper {
+    height: 300px;
+  }
+
+  .article-content {
+    padding: 2rem 1.5rem;
+  }
+  .section-heading {
+    font-size: 1.3rem;
+  }
+
+  .section-paragraph {
+    font-size: 1rem;
+  }
+  .section-heading {
+    font-size: 1.5rem;
+  }
+
+  .section-paragraph {
+    font-size: 1.05rem;
+  }
+
+  .article-text {
+    font-size: 1.05rem;
+  }
+
+  .article-details,
+  .article-benefits,
+  .article-terms {
+    padding: 1.5rem;
+  }
+
+  .article-details h3,
+  .article-benefits h3,
+  .article-terms h3 {
+    font-size: 1.3rem;
+  }
+
+  .article-benefits li,
+  .article-terms li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-detail-page {
+    padding: 5rem 0.8rem 2.5rem;
+  }
+
+  .back-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .article-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .article-title {
+    font-size: 1.6rem;
+  }
+
+  .article-meta {
+    font-size: 0.9rem;
+  }
+
+  .article-image-wrapper {
+    height: 250px;
+  }
+
+  .article-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .article-text {
+    font-size: 1rem;
+  }
+
+  .article-details,
+  .article-benefits,
+  .article-terms {
+    padding: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .article-details h3,
+  .article-benefits h3,
+  .article-terms h3 {
+    font-size: 1.2rem;
+  }
+
+  .article-details p,
+  .article-benefits li,
+  .article-terms li {
+    font-size: 0.95rem;
+  }
+}

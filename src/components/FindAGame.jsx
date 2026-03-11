@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { collection, addDoc, query, onSnapshot, orderBy } from 'firebase/firestore'
-import { db } from '../firebase'
+import { collection, addDoc, query, onSnapshot, orderBy, doc, getDoc } from 'firebase/firestore'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import { db, app } from '../firebase'
 import './FindAGame.css'
 
 function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
@@ -16,6 +17,29 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isLoadingBookings, setIsLoadingBookings] = useState(true)
   const [bookingsError, setBookingsError] = useState(null)
+
+  // Pricing from Firestore
+  const [pricing, setPricing] = useState({
+    fieldMorning: 0,
+    fieldEvening: 0,
+    photographer: 0,
+    shoes: 0,
+    vests: 0,
+    jerseys: 0
+  })
+
+  // Controlled booking form state for price calculation
+  const [bookingFormState, setBookingFormState] = useState({
+    duration: 1,
+    rentPhotographer: false,
+    rentShoes: false,
+    shoesQty: 0,
+    rentVests: false,
+    vestsQty: 0,
+    rentJerseys: false,
+    jerseysQty: 0
+  })
+  const [paymentLoading, setPaymentLoading] = useState(false)
 
   // Handle background transitions
   useEffect(() => {
@@ -52,6 +76,7 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       setBookings(bookingsData)
       setIsLoadingBookings(false)
       console.log('Berhasil memuat', bookingsData.length, 'booking')
+      console.log('Booking data structure:', bookingsData.map(b => ({ id: b.id, date: b.date, time: b.time })))
     }, (error) => {
       console.error('Error fetching bookings:', error)
       setBookingsError(error.message)
@@ -65,6 +90,70 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
     // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [])
+
+  // Load pricing from Firestore
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'settings', 'pricing'))
+        if (snap.exists()) {
+          const p = snap.data()
+          setPricing({
+            fieldMorning: p.fieldMorning || 0,
+            fieldEvening: p.fieldEvening || 0,
+            photographer: p.photographer || 0,
+            shoes: p.shoes || 0,
+            vests: p.vests || 0,
+            jerseys: p.jerseys || 0
+          })
+        }
+      } catch (e) {
+        console.error('Error loading pricing:', e)
+      }
+    }
+    fetchPricing()
+  }, [])
+
+  // Reset form state when modal closes
+  useEffect(() => {
+    if (!isBookingModalOpen) {
+      setBookingFormState({
+        duration: 1,
+        rentPhotographer: false,
+        rentShoes: false,
+        shoesQty: 0,
+        rentVests: false,
+        vestsQty: 0,
+        rentJerseys: false,
+        jerseysQty: 0
+      })
+    }
+  }, [isBookingModalOpen])
+
+  // Calculate total price
+  const calculateTotal = () => {
+    if (!selectedSlot) return 0
+    const startHour = 6 + selectedSlot.timeIndex
+    const { duration } = bookingFormState
+
+    // Split duration into morning (06-16) and evening (16-24) hours
+    const morningHours = Math.max(0, Math.min(duration, 16 - startHour))
+    const eveningHours = Math.max(0, duration - morningHours)
+
+    let total = 0
+    total += morningHours * (pricing.fieldMorning || 0)
+    total += eveningHours * (pricing.fieldEvening || 0)
+
+    if (bookingFormState.rentPhotographer) total += pricing.photographer || 0
+    if (bookingFormState.rentShoes) total += (pricing.shoes || 0) * (bookingFormState.shoesQty || 0)
+    if (bookingFormState.rentVests) total += (pricing.vests || 0) * (bookingFormState.vestsQty || 0)
+    if (bookingFormState.rentJerseys) total += (pricing.jerseys || 0) * (bookingFormState.jerseysQty || 0)
+
+    return total
+  }
+
+  const formatRupiah = (num) =>
+    'Rp ' + Number(num).toLocaleString('id-ID')
 
   const handleDateClick = (date) => {
     // Check if date is in the past
@@ -112,13 +201,37 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
     setIsBookingModalOpen(true)
   }
 
+  // Load Midtrans Snap.js dynamically
+  useEffect(() => {
+    const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY
+    if (!clientKey) return
+    if (document.getElementById('midtrans-snap-js')) return
+    const script = document.createElement('script')
+    script.id = 'midtrans-snap-js'
+    script.src = 'https://app.midtrans.com/snap/snap.js'
+    script.setAttribute('data-client-key', clientKey)
+    document.head.appendChild(script)
+    return () => {
+      const el = document.getElementById('midtrans-snap-js')
+      if (el) el.remove()
+    }
+  }, [])
+
   const handleBookingSubmit = async (e) => {
     e.preventDefault()
     const teamName = e.target.teamName.value
-    const duration = parseInt(e.target.duration.value)
+    const { duration, rentPhotographer, rentShoes, shoesQty, rentVests, vestsQty, rentJerseys, jerseysQty } = bookingFormState
     
+    // Validasi: cek apakah booking melebihi jam tutup (24:00)
+    const maxTimeIndex = 18
+    if (selectedSlot.timeIndex + duration > maxTimeIndex) {
+      alert(`Tidak bisa booking! Waktu booking akan melebihi jam tutup (24:00). Silakan pilih durasi yang lebih pendek atau waktu yang lebih awal.`)
+      return
+    }
+    
+    setPaymentLoading(true)
     try {
-      // Create new booking in Firestore
+      const totalPrice = calculateTotal()
       const newBooking = {
         key: selectedSlot.bookingKey,
         date: selectedSlot.date,
@@ -128,19 +241,59 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
         bookedBy: currentUser.email,
         bookedByName: currentUser.name,
         bookedByUid: currentUser.uid,
-        bookedAt: new Date().toISOString()
+        bookedAt: new Date().toISOString(),
+        totalPrice,
+        paymentStatus: 'pending',
+        rentals: {
+          photographer: rentPhotographer,
+          shoes: rentShoes ? shoesQty : 0,
+          vests: rentVests ? vestsQty : 0,
+          jerseys: rentJerseys ? jerseysQty : 0
+        }
       }
 
-      await addDoc(collection(db, 'bookings'), newBooking)
-      
-      // Close modal
+      // Save booking to Firestore first
+      const docRef = await addDoc(collection(db, 'bookings'), newBooking)
+      const bookingId = docRef.id
+
+      // Close modal before opening Snap
       setIsBookingModalOpen(false)
       setSelectedSlot(null)
-      e.target.reset()
-      
-      alert('Booking berhasil!')
+      setPaymentLoading(false)
+
+      // Call Cloud Function to get Snap token
+      const functions = getFunctions(app, 'asia-southeast1')
+      const createPayment = httpsCallable(functions, 'createPayment')
+      const result = await createPayment({
+        bookingId,
+        customerName: currentUser.name,
+        customerEmail: currentUser.email,
+        totalPrice,
+        duration,
+        startHour: 6 + selectedSlot.timeIndex,
+        rentals: newBooking.rentals
+      })
+
+      const { token } = result.data
+
+      // Open Midtrans payment popup
+      window.snap.pay(token, {
+        onSuccess: () => {
+          alert('Pembayaran berhasil! Booking Anda telah dikonfirmasi.')
+        },
+        onPending: () => {
+          alert('Pembayaran sedang diproses. Booking Anda menunggu konfirmasi pembayaran.')
+        },
+        onError: () => {
+          alert('Pembayaran gagal. Booking telah dibatalkan. Silakan coba booking ulang.')
+        },
+        onClose: () => {
+          alert('Anda menutup halaman pembayaran. Booking perlu dibayar untuk dikonfirmasi.')
+        }
+      })
     } catch (error) {
-      console.error('Error adding booking:', error)
+      console.error('Error submitting booking:', error)
+      setPaymentLoading(false)
       alert('Gagal melakukan booking. Silakan coba lagi.')
     }
   }
@@ -178,17 +331,32 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
 
   // Generate schedule data from bookings
   const generateScheduleData = () => {
-    const timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00']
+    const timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00']
     return { timeSlots }
   }
 
   const getBookingsForDate = (dateObj) => {
     // Filter bookings for the selected date
-    return bookings.filter(b => 
-      b.date.date === dateObj.date && 
-      b.date.month === dateObj.month && 
-      b.date.year === dateObj.year
-    )
+    const filtered = bookings.filter(b => {
+      // Check if b.date is an object with the expected properties
+      if (!b.date || typeof b.date !== 'object') {
+        console.log('Invalid booking date format:', b)
+        return false
+      }
+      
+      const matches = b.date.date === dateObj.date && 
+                     b.date.month === dateObj.month && 
+                     b.date.year === dateObj.year
+      
+      if (matches) {
+        console.log('Found matching booking:', b, 'for date:', dateObj)
+      }
+      
+      return matches
+    })
+    
+    console.log(`Filtered bookings for ${dateObj.date}/${dateObj.month + 1}/${dateObj.year}:`, filtered.length)
+    return filtered
   }
 
   const getDayInfo = (dateObj) => {
@@ -390,13 +558,160 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
               </div>
               <div className="form-group">
                 <label htmlFor="duration">Durasi (jam)</label>
-                <select id="duration" name="duration" required>
-                  <option value="1">1 Jam</option>
-                  <option value="2">2 Jam</option>
-                  <option value="3">3 Jam</option>
+                <select
+                  id="duration"
+                  name="duration"
+                  required
+                  value={bookingFormState.duration}
+                  onChange={(e) => setBookingFormState({ ...bookingFormState, duration: parseInt(e.target.value) })}
+                >
+                  {Array.from(
+                    { length: Math.min(5, 18 - (selectedSlot?.timeIndex || 0)) },
+                    (_, i) => i + 1
+                  ).map(n => (
+                    <option key={n} value={n}>{n} Jam</option>
+                  ))}
                 </select>
               </div>
-              <button type="submit" className="submit-booking-btn">Konfirmasi Booking</button>
+              
+              <div className="form-group rental-section">
+                <label className="rental-section-title">Sewa Tambahan (Opsional)</label>
+                
+                <div className="rental-grid">
+                  <label className="rental-item rental-photographer">
+                    <input 
+                      type="checkbox" 
+                      name="rentPhotographer"
+                      className="rental-checkbox"
+                      checked={bookingFormState.rentPhotographer}
+                      onChange={(e) => setBookingFormState({ ...bookingFormState, rentPhotographer: e.target.checked })}
+                    />
+                    <span className="rental-label">Sewa Fotografer</span>
+                  </label>
+
+                  <div className="rental-item rental-with-qty">
+                    <label className="rental-item-header">
+                      <input 
+                        type="checkbox" 
+                        name="rentShoes"
+                        className="rental-checkbox"
+                        checked={bookingFormState.rentShoes}
+                        onChange={(e) => setBookingFormState({ ...bookingFormState, rentShoes: e.target.checked, shoesQty: e.target.checked ? (bookingFormState.shoesQty || 1) : 0 })}
+                      />
+                      <span className="rental-label">Sewa Sepatu</span>
+                    </label>
+                    <div className="rental-qty-input">
+                      <span className="qty-label">Jumlah:</span>
+                      <input 
+                        type="number" 
+                        name="shoesQty"
+                        min="0"
+                        className="qty-input"
+                        value={bookingFormState.shoesQty}
+                        onChange={(e) => setBookingFormState({ ...bookingFormState, shoesQty: parseInt(e.target.value) || 0 })}
+                      />
+                      <span className="qty-unit">pasang</span>
+                    </div>
+                  </div>
+
+                  <div className="rental-item rental-with-qty">
+                    <label className="rental-item-header">
+                      <input 
+                        type="checkbox" 
+                        name="rentVests"
+                        className="rental-checkbox"
+                        checked={bookingFormState.rentVests}
+                        onChange={(e) => setBookingFormState({ ...bookingFormState, rentVests: e.target.checked, vestsQty: e.target.checked ? (bookingFormState.vestsQty || 1) : 0 })}
+                      />
+                      <span className="rental-label">Sewa Rompi</span>
+                    </label>
+                    <div className="rental-qty-input">
+                      <span className="qty-label">Jumlah:</span>
+                      <input 
+                        type="number" 
+                        name="vestsQty"
+                        min="0"
+                        className="qty-input"
+                        value={bookingFormState.vestsQty}
+                        onChange={(e) => setBookingFormState({ ...bookingFormState, vestsQty: parseInt(e.target.value) || 0 })}
+                      />
+                      <span className="qty-unit">buah</span>
+                    </div>
+                  </div>
+
+                  <div className="rental-item rental-with-qty">
+                    <label className="rental-item-header">
+                      <input 
+                        type="checkbox" 
+                        name="rentJerseys"
+                        className="rental-checkbox"
+                        checked={bookingFormState.rentJerseys}
+                        onChange={(e) => setBookingFormState({ ...bookingFormState, rentJerseys: e.target.checked, jerseysQty: e.target.checked ? (bookingFormState.jerseysQty || 1) : 0 })}
+                      />
+                      <span className="rental-label">Sewa Kaos Tim</span>
+                    </label>
+                    <div className="rental-qty-input">
+                      <span className="qty-label">Jumlah:</span>
+                      <input 
+                        type="number" 
+                        name="jerseysQty"
+                        min="0"
+                        className="qty-input"
+                        value={bookingFormState.jerseysQty}
+                        onChange={(e) => setBookingFormState({ ...bookingFormState, jerseysQty: parseInt(e.target.value) || 0 })}
+                      />
+                      <span className="qty-unit">buah</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Harga */}
+              <div className="booking-total-section">
+                <div className="booking-total-breakdown">
+                  <div className="breakdown-row">
+                    <span>Sewa Lapangan ({bookingFormState.duration} jam)</span>
+                    <span>{formatRupiah((() => {
+                      const startHour = 6 + (selectedSlot?.timeIndex || 0)
+                      const morningHours = Math.max(0, Math.min(bookingFormState.duration, 16 - startHour))
+                      const eveningHours = Math.max(0, bookingFormState.duration - morningHours)
+                      return morningHours * pricing.fieldMorning + eveningHours * pricing.fieldEvening
+                    })())}</span>
+                  </div>
+                  {bookingFormState.rentPhotographer && (
+                    <div className="breakdown-row">
+                      <span>Fotografer</span>
+                      <span>{formatRupiah(pricing.photographer)}</span>
+                    </div>
+                  )}
+                  {bookingFormState.rentShoes && bookingFormState.shoesQty > 0 && (
+                    <div className="breakdown-row">
+                      <span>Sepatu × {bookingFormState.shoesQty}</span>
+                      <span>{formatRupiah(pricing.shoes * bookingFormState.shoesQty)}</span>
+                    </div>
+                  )}
+                  {bookingFormState.rentVests && bookingFormState.vestsQty > 0 && (
+                    <div className="breakdown-row">
+                      <span>Rompi × {bookingFormState.vestsQty}</span>
+                      <span>{formatRupiah(pricing.vests * bookingFormState.vestsQty)}</span>
+                    </div>
+                  )}
+                  {bookingFormState.rentJerseys && bookingFormState.jerseysQty > 0 && (
+                    <div className="breakdown-row">
+                      <span>Kaos Tim × {bookingFormState.jerseysQty}</span>
+                      <span>{formatRupiah(pricing.jerseys * bookingFormState.jerseysQty)}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="booking-total-row">
+                  <span className="booking-total-label">Total Harga</span>
+                  <span className="booking-total-amount">{formatRupiah(calculateTotal())}</span>
+                </div>
+              </div>
+              
+              <button type="submit" className="submit-booking-btn" disabled={paymentLoading}>
+                {paymentLoading ? 'Memproses...' : 'Konfirmasi & Bayar'}
+              </button>
             </form>
           </div>
         </div>

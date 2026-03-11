@@ -513,12 +513,29 @@
 .booking-modal-content {
   background: white;
   border-radius: 15px;
-  padding: 2rem;
-  max-width: 500px;
+  padding: 1.5rem;
+  max-width: 600px;
   width: 90%;
   position: relative;
   animation: fadeInUp 0.3s ease;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  overflow-y: auto;
+  margin-top: 4rem;
+}
+
+/* Desktop: wider modal */
+@media (min-width: 768px) {
+  .booking-modal-content {
+    max-width: 750px;
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .booking-modal-content {
+    max-width: 850px;
+  }
 }
 
 .close-modal {
@@ -561,7 +578,56 @@
   margin-bottom: 0.5rem;
 }
 
-.booking-modal-content input,
+/* Override for rental labels to maintain flex layout */
+.booking-modal-content label.rental-photographer {
+  display: flex !important;
+  font-weight: normal;
+  margin-bottom: 0;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.booking-modal-content label.rental-item-header {
+  display: flex !important;
+  font-weight: normal;
+  margin-bottom: 0;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.booking-modal-content .rental-label {
+  font-weight: normal;
+  display: inline;
+}
+
+.booking-modal-content .rental-checkbox {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.booking-modal-content .qty-input {
+  width: 80px !important;
+  max-width: 80px !important;
+  padding: 8px 10px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  flex-shrink: 0;
+}
+
+.booking-modal-content input:not([type="checkbox"]),
 .booking-modal-content select {
   width: 100%;
   padding: 0.8rem;
@@ -572,11 +638,60 @@
   transition: border-color 0.3s ease;
 }
 
-.booking-modal-content input:focus,
+.booking-modal-content input:not([type="checkbox"]):focus,
 .booking-modal-content select:focus {
   outline: none;
   border-color: #48bb78;
   box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+}
+
+/* Total Harga */
+.booking-total-section {
+  margin-top: 20px;
+  border: 2px solid #48bb78;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.booking-total-breakdown {
+  background: #f7fdf9;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid #c6f6d5;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.breakdown-row span:last-child {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.booking-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #48bb78;
+}
+
+.booking-total-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.booking-total-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
 }
 
 .submit-booking-btn {
@@ -597,6 +712,203 @@
 .submit-booking-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+}
+
+/* Rental Section Styling */
+.rental-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.rental-section-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: block;
+  font-size: 16px;
+  color: #2d3748;
+}
+
+@media (max-width: 768px) {
+  .rental-section {
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+  
+  .rental-section-title {
+    font-size: 17px;
+    margin-bottom: 18px;
+  }
+}
+
+.rental-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+
+/* Desktop: 2 columns */
+@media (min-width: 768px) {
+  .rental-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  
+  .rental-photographer {
+    grid-column: 1 / -1;
+  }
+}
+
+.rental-item {
+  padding: 0;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .rental-item {
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+}
+
+.rental-item:hover {
+  background-color: #f0f0f0;
+}
+
+.rental-photographer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.rental-with-qty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.rental-item-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.rental-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.rental-label {
+  font-size: 15px;
+  color: #2d3748;
+  line-height: 1.5;
+  display: inline-block;
+}
+
+.rental-qty-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  padding-left: 32px;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+}
+
+.qty-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.qty-input {
+  width: 80px;
+  min-width: 60px;
+  max-width: 80px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.qty-input:focus {
+  outline: none;
+  border-color: #48bb78;
+  box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.1);
+}
+
+.qty-unit {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .rental-checkbox {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .rental-photographer {
+    padding: 16px 18px;
+    gap: 14px;
+  }
+  
+  .rental-with-qty {
+    padding: 16px 18px;
+    gap: 14px;
+  }
+  
+  .rental-item-header {
+    gap: 14px;
+  }
+  
+  .rental-label {
+    font-size: 16px;
+  }
+  
+  .rental-qty-input {
+    padding-left: 36px;
+    gap: 10px;
+    max-width: calc(100% - 36px);
+  }
+  
+  .qty-input {
+    width: 90px;
+    max-width: 90px;
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+  
+  .qty-label,
+  .qty-unit {
+    font-size: 15px;
+  }
+  
+  .rental-grid {
+    gap: 14px;
+  }
 }
 
 .sparring-brand {
@@ -725,6 +1037,14 @@
     font-size: 2rem;
     bottom: 1.5rem;
     right: 1.5rem;
+  }
+  
+  .rental-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .rental-photographer {
+    grid-column: auto;
   }
 }
 

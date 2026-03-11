@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './Navbar.css'
 
-function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, onHistoryClick, onTransactionClick, currentUser, onLogout }) {
+function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, onHistoryClick, onTransactionClick, onAdminClick, onNewsClick, currentUser, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -76,6 +76,20 @@ function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, on
     setIsMenuOpen(false)
   }
 
+  const handleAdminClick = () => {
+    if (onAdminClick) {
+      onAdminClick()
+    }
+    setIsMenuOpen(false)
+  }
+
+  const handleNewsClick = () => {
+    if (onNewsClick) {
+      onNewsClick()
+    }
+    setIsMenuOpen(false)
+  }
+
   const isAdmin = currentUser && currentUser.email === 'aryafian232@gmail.com'
 
   return (
@@ -97,13 +111,21 @@ function Navbar({ onLoginClick, onFindGameClick, onHomeClick, onContactClick, on
           <button onClick={handleFindGameClick} className="nav-btn">
             Booking
           </button>
+          <button onClick={handleNewsClick} className="nav-btn">
+            Berita
+          </button>
           <button onClick={handleContactClick} className="nav-btn">
             Our Contact
           </button>
           {isAdmin && (
-            <button onClick={handleTransactionClick} className="nav-btn">
-              Transaction
-            </button>
+            <>
+              <button onClick={handleTransactionClick} className="nav-btn">
+                Transaction
+              </button>
+              <button onClick={handleAdminClick} className="nav-btn">
+                Admin Panel
+              </button>
+            </>
           )}
         </div>
 

@@ -2,13 +2,41 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow anyone to read bookings (no authentication required)
-    // This allows users to see all bookings without logging in
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'aryafian232@gmail.com';
+    }
+    
+    // Bookings collection
     match /bookings/{bookingId} {
-      allow read: if true;
-      allow create: if request.auth != null;
+      allow read: if true;  // Anyone can read bookings
+      allow create: if request.auth != null;  // Authenticated users can create
       allow update, delete: if request.auth != null && 
-                              request.auth.uid == resource.data.bookedByUid;
+                              (request.auth.uid == resource.data.bookedByUid || isAdmin());  // Owner or admin can update/delete
+    }
+    
+    // News collection - admin can manage, everyone can read
+    match /news/{newsId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Schedules collection - admin can manage, everyone can read
+    match /schedules/{scheduleId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Backgrounds collection - admin can manage, everyone can read
+    match /backgrounds/{backgroundId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Settings collection - admin can manage, everyone can read
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
     }
     
     // Block all other collections by default
