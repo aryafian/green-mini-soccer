@@ -187,6 +187,11 @@
   border-color: #00f2ea;
 }
 
+.social-link.whatsapp:hover {
+  background: #25D366;
+  border-color: #25D366;
+}
+
 .social-link svg {
   flex-shrink: 0;
 }
