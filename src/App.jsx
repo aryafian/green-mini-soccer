@@ -34,7 +34,6 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in
         setCurrentUser({
           uid: user.uid,
           email: user.email,
@@ -42,8 +41,8 @@ function App() {
           picture: user.photoURL,
           loginMethod: user.providerData[0]?.providerId.includes('google') ? 'google' : 'email'
         })
+        setIsLoginOpen(false) // Tutup modal otomatis setelah login berhasil
       } else {
-        // User is signed out
         setCurrentUser(null)
       }
     })
@@ -194,6 +193,7 @@ function App() {
           backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
+          key="login-modal"
           isOpen={isLoginOpen} 
           onClose={() => setIsLoginOpen(false)}
           onLogin={handleLogin}
@@ -223,6 +223,7 @@ function App() {
           backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
+          key="login-modal"
           isOpen={isLoginOpen} 
           onClose={() => setIsLoginOpen(false)}
           onLogin={handleLogin}
@@ -252,6 +253,7 @@ function App() {
           backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
+          key="login-modal"
           isOpen={isLoginOpen} 
           onClose={() => setIsLoginOpen(false)}
           onLogin={handleLogin}
@@ -280,6 +282,7 @@ function App() {
           backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
+          key="login-modal"
           isOpen={isLoginOpen} 
           onClose={() => setIsLoginOpen(false)}
           onLogin={handleLogin}
@@ -309,6 +312,7 @@ function App() {
           backgroundImage={backgroundImages[currentBgImage]}
         />
         <LoginModal 
+          key="login-modal"
           isOpen={isLoginOpen} 
           onClose={() => setIsLoginOpen(false)}
           onLogin={handleLogin}
