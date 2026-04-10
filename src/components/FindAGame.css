@@ -519,9 +519,28 @@
   position: relative;
   animation: fadeInUp 0.3s ease;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
-  margin-top: 4rem;
+  margin: auto;
+}
+
+/* Mobile: smaller padding, full height available */
+@media (max-width: 480px) {
+  .booking-modal-content {
+    width: 95%;
+    padding: 1rem;
+    max-height: 90vh;
+    border-radius: 12px;
+  }
+}
+
+/* Tablet: adjust padding */
+@media (min-width: 481px) and (max-width: 768px) {
+  .booking-modal-content {
+    width: 92%;
+    padding: 1.25rem;
+    max-height: 85vh;
+  }
 }
 
 /* Desktop: wider modal */
@@ -529,6 +548,7 @@
   .booking-modal-content {
     max-width: 750px;
     padding: 2rem;
+    max-height: 80vh;
   }
 }
 
@@ -546,6 +566,20 @@
   color: #718096;
   cursor: pointer;
   transition: color 0.3s ease;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (max-width: 480px) {
+  .close-modal {
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 1.75rem;
+  }
 }
 
 .close-modal:hover {
@@ -556,6 +590,14 @@
   color: #2d3748;
   margin-bottom: 1rem;
   font-size: 1.5rem;
+  word-wrap: break-word;
+}
+
+@media (max-width: 480px) {
+  .booking-modal-content h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
 }
 
 .booking-info {
@@ -565,10 +607,25 @@
   background: #f7fafc;
   border-radius: 8px;
   line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 480px) {
+  .booking-info {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
 }
 
 .booking-modal-content .form-group {
   margin-bottom: 1.2rem;
+}
+
+@media (max-width: 480px) {
+  .booking-modal-content .form-group {
+    margin-bottom: 1rem;
+  }
 }
 
 .booking-modal-content label {
@@ -576,6 +633,14 @@
   color: #2d3748;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 480px) {
+  .booking-modal-content label {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
 }
 
 /* Override for rental labels to maintain flex layout */
@@ -627,6 +692,16 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 480px) {
+  .booking-modal-content .qty-input {
+    width: 70px !important;
+    max-width: 70px !important;
+    padding: 10px 8px !important;
+    font-size: 15px !important;
+    min-height: 36px !important;
+  }
+}
+
 .booking-modal-content input:not([type="checkbox"]),
 .booking-modal-content select {
   width: 100%;
@@ -636,6 +711,17 @@
   font-size: 1rem;
   font-family: 'Poppins', sans-serif;
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  min-height: 44px;
+}
+
+@media (max-width: 480px) {
+  .booking-modal-content input:not([type="checkbox"]),
+  .booking-modal-content select {
+    padding: 0.9rem;
+    font-size: 1.05rem;
+    min-height: 48px;
+  }
 }
 
 .booking-modal-content input:not([type="checkbox"]):focus,
@@ -653,6 +739,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 480px) {
+  .booking-total-section {
+    margin-top: 15px;
+  }
+}
+
 .booking-total-breakdown {
   background: #f7fdf9;
   padding: 12px 16px;
@@ -662,11 +754,24 @@
   border-bottom: 1px solid #c6f6d5;
 }
 
+@media (max-width: 480px) {
+  .booking-total-breakdown {
+    padding: 10px 12px;
+    gap: 5px;
+  }
+}
+
 .breakdown-row {
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #4a5568;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .breakdown-row {
+    font-size: 12px;
+  }
 }
 
 .breakdown-row span:last-child {
@@ -680,6 +785,14 @@
   align-items: center;
   padding: 12px 16px;
   background: #48bb78;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .booking-total-row {
+    padding: 10px 12px;
+    gap: 0.5rem;
+  }
 }
 
 .booking-total-label {
@@ -688,10 +801,118 @@
   color: #fff;
 }
 
+@media (max-width: 480px) {
+  .booking-total-label {
+    font-size: 14px;
+  }
+}
+
 .booking-total-amount {
   font-size: 18px;
   font-weight: 800;
   color: #fff;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .booking-total-amount {
+    font-size: 16px;
+  }
+}
+
+/* Payment Method Selection */
+.booking-payment-method-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 480px) {
+  .booking-payment-method-section {
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+}
+
+.payment-method-label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .payment-method-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+}
+
+.payment-method-label span {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #48bb78;
+}
+
+@media (max-width: 480px) {
+  .payment-method-label span {
+    font-size: 0.95rem;
+  }
+}
+
+.payment-method-select {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border: 2px solid rgba(72, 187, 120, 0.5);
+  border-radius: 8px;
+  color: #000;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .payment-method-select {
+    padding: 0.85rem;
+    font-size: 1rem;
+    min-height: 44px;
+  }
+}
+
+.payment-method-select:hover {
+  border-color: #48bb78;
+  background: #e8f5e9;
+}
+
+.payment-method-select:focus {
+  outline: none;
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+  background: #e8f5e9;
+}
+
+.payment-method-select option {
+  background: #f5f5f5;
+  color: #000;
+  font-weight: 500;
+  padding: 0.5rem;
+}
+
+.payment-method-select option:hover {
+  background: #e8f5e9;
+}
+
+.payment-method-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .submit-booking-btn {
@@ -707,11 +928,31 @@
   transition: all 0.3s ease;
   font-family: 'Poppins', sans-serif;
   margin-top: 1rem;
+  box-sizing: border-box;
+  min-height: 48px;
 }
 
-.submit-booking-btn:hover {
+@media (max-width: 480px) {
+  .submit-booking-btn {
+    padding: 0.9rem;
+    font-size: 1rem;
+    margin-top: 0.75rem;
+    min-height: 48px;
+  }
+}
+
+.submit-booking-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+}
+
+.submit-booking-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-booking-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* Rental Section Styling */
@@ -848,6 +1089,17 @@
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
   flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .qty-input {
+    width: 70px;
+    min-width: 50px;
+    max-width: 70px;
+    padding: 10px 8px;
+    font-size: 15px;
+    min-height: 36px;
+  }
 }
 
 .qty-input:focus {

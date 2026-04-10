@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { collection, addDoc, query, onSnapshot, orderBy, doc, getDoc } from 'firebase/firestore'
-import { getFunctions, httpsCallable } from 'firebase/functions'
-import { db, app } from '../firebase'
+import { collection, addDoc, query, onSnapshot, orderBy, doc, getDoc, deleteDoc } from 'firebase/firestore'
+import { db, app, auth } from '../firebase'
 import './FindAGame.css'
 
 function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
@@ -40,6 +39,15 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
     jerseysQty: 0
   })
   const [paymentLoading, setPaymentLoading] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('qris')
+
+  // Payment methods available
+  const paymentMethods = [
+    { id: 'qris', label: 'QRIS', value: 'qris' },
+    { id: 'bank_transfer', label: 'Transfer Bank', value: 'bank_transfer' },
+    { id: 'ewallet', label: 'E-Wallet (GCash, Dana, OVO, LinkAja)', value: 'ewallet' },
+    { id: 'credit_card', label: 'Kartu Kredit/Debit', value: 'credit_card' },
+  ]
 
   // Handle background transitions
   useEffect(() => {
@@ -196,8 +204,9 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       return
     }
 
-    // Open booking modal
+    // Open booking modal and reset payment method
     setSelectedSlot({ date, timeIndex, bookingKey })
+    setSelectedPaymentMethod('qris')
     setIsBookingModalOpen(true)
   }
 
@@ -222,20 +231,33 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
     const teamName = e.target.teamName.value
     const { duration, rentPhotographer, rentShoes, shoesQty, rentVests, vestsQty, rentJerseys, jerseysQty } = bookingFormState
     
+    // Extract selectedSlot values early (before closing modal)
+    const timeIndex = selectedSlot.timeIndex
+    const slotDate = selectedSlot.date
+    const bookingKey = selectedSlot.bookingKey
+    
     // Validasi: cek apakah booking melebihi jam tutup (24:00)
     const maxTimeIndex = 18
-    if (selectedSlot.timeIndex + duration > maxTimeIndex) {
+    if (timeIndex + duration > maxTimeIndex) {
       alert(`Tidak bisa booking! Waktu booking akan melebihi jam tutup (24:00). Silakan pilih durasi yang lebih pendek atau waktu yang lebih awal.`)
       return
     }
     
     setPaymentLoading(true)
+    let bookingId = null
     try {
+      // Step 1: Get Firebase ID token first
+      if (!auth.currentUser) {
+        throw new Error('User not authenticated')
+      }
+      const idToken = await auth.currentUser.getIdToken()
+
+      // Step 2: Prepare booking data
       const totalPrice = calculateTotal()
       const newBooking = {
-        key: selectedSlot.bookingKey,
-        date: selectedSlot.date,
-        time: selectedSlot.timeIndex,
+        key: bookingKey,
+        date: slotDate,
+        time: timeIndex,
         duration: duration,
         name: teamName,
         bookedBy: currentUser.email,
@@ -244,6 +266,7 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
         bookedAt: new Date().toISOString(),
         totalPrice,
         paymentStatus: 'pending',
+        paymentMethod: selectedPaymentMethod,
         rentals: {
           photographer: rentPhotographer,
           shoes: rentShoes ? shoesQty : 0,
@@ -252,29 +275,41 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
         }
       }
 
-      // Save booking to Firestore first
+      // Step 3: Save booking to Firestore FIRST
       const docRef = await addDoc(collection(db, 'bookings'), newBooking)
-      const bookingId = docRef.id
+      bookingId = docRef.id
 
-      // Close modal before opening Snap
+      // Step 4: Get payment token from backend using real booking ID
+      const backendUrl = 'https://green-mini-soccer-backend.railway.app' // production
+      // const backendUrl = 'http://localhost:5001' // development (comment out utk prod)
+      
+      const response = await fetch(`${backendUrl}/api/payment`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          bookingId,
+          customerName: currentUser.name,
+          customerEmail: currentUser.email,
+          duration,
+          startHour: 6 + timeIndex,
+          rentals: newBooking.rentals
+        })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || `Payment API error: ${response.status}`)
+      }
+
+      const { token } = await response.json()
+
+      // Step 5: Close modal before opening Snap
       setIsBookingModalOpen(false)
       setSelectedSlot(null)
       setPaymentLoading(false)
-
-      // Call Cloud Function to get Snap token
-      const functions = getFunctions(app, 'asia-southeast1')
-      const createPayment = httpsCallable(functions, 'createPayment')
-      const result = await createPayment({
-        bookingId,
-        customerName: currentUser.name,
-        customerEmail: currentUser.email,
-        totalPrice,
-        duration,
-        startHour: 6 + selectedSlot.timeIndex,
-        rentals: newBooking.rentals
-      })
-
-      const { token } = result.data
 
       // Open Midtrans payment popup
       window.snap.pay(token, {
@@ -294,7 +329,20 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
     } catch (error) {
       console.error('Error submitting booking:', error)
       setPaymentLoading(false)
-      alert('Gagal melakukan booking. Silakan coba lagi.')
+      
+      // If booking was saved but payment failed, delete it
+      if (bookingId) {
+        try {
+          await deleteDoc(doc(db, 'bookings', bookingId))
+          console.log('Booking deleted due to payment error')
+        } catch (deleteError) {
+          console.error('Failed to delete booking:', deleteError)
+        }
+      }
+      
+      // Re-open modal if booking failed, so user can try again
+      setIsBookingModalOpen(true)
+      alert(`Gagal melakukan booking: ${error.message}. Silakan coba lagi.`)
     }
   }
 
@@ -709,6 +757,26 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
                 </div>
               </div>
               
+              {/* Payment Method Selection */}
+              <div className="booking-payment-method-section">
+                <label htmlFor="payment-method" className="payment-method-label">
+                  <span>💳 Pilih Metode Pembayaran:</span>
+                </label>
+                <select 
+                  id="payment-method"
+                  className="payment-method-select"
+                  value={selectedPaymentMethod}
+                  onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                  disabled={paymentLoading}
+                >
+                  {paymentMethods.map((method) => (
+                    <option key={method.id} value={method.id}>
+                      {method.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <button type="submit" className="submit-booking-btn" disabled={paymentLoading}>
                 {paymentLoading ? 'Memproses...' : 'Konfirmasi & Bayar'}
               </button>
