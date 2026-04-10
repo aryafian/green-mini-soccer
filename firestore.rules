@@ -9,10 +9,15 @@ service cloud.firestore {
     
     // Bookings collection
     match /bookings/{bookingId} {
-      allow read: if true;  // Anyone can read bookings
-      allow create: if request.auth != null;  // Authenticated users can create
-      allow update, delete: if request.auth != null && 
-                              (request.auth.uid == resource.data.bookedByUid || isAdmin());  // Owner or admin can update/delete
+      // Only booking owner or admin can read (privacy protection)
+      allow read: if request.auth != null && 
+                    (request.auth.uid == resource.data.bookedByUid || isAdmin());
+      // Authenticated users can create
+      allow create: if request.auth != null;
+      // Backend-only status updates via Midtrans webhook
+      allow update: if false;
+      // Users can delete own bookings (e.g., for error recovery or cancellation)
+      allow delete: if request.auth != null && request.auth.uid == resource.data.bookedByUid;
     }
     
     // News collection - admin can manage, everyone can read

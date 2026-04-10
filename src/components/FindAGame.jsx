@@ -91,7 +91,8 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       setIsLoadingBookings(false)
       
       if (error.code === 'permission-denied') {
-        alert('Tidak dapat memuat data booking. Pastikan Firestore rules mengizinkan read tanpa autentikasi.')
+        console.warn('Permission denied reading bookings - user may not be authenticated')
+        setBookingsError('Silakan login untuk melihat jadwal booking')
       }
     })
 
@@ -280,8 +281,7 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       bookingId = docRef.id
 
       // Step 4: Get payment token from backend using real booking ID
-      const backendUrl = 'https://green-mini-soccer-backend.railway.app' // production
-      // const backendUrl = 'http://localhost:5001' // development (comment out utk prod)
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001'
       
       const response = await fetch(`${backendUrl}/api/payment`, {
         method: 'POST',

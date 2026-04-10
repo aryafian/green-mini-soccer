@@ -92,8 +92,21 @@ app.post('/api/payment', async (req, res) => {
     }
 
     const booking = bookingSnap.data() || {}
+    
+    // Verify user is the booking owner
     if (booking.bookedByUid && booking.bookedByUid !== decoded.uid) {
       return res.status(403).json({ error: 'Unauthorized - booking belongs to different user' })
+    }
+    
+    // Prevent duplicate payments - check if already paid
+    if (booking.paymentStatus === 'paid') {
+      return res.status(400).json({ error: 'Booking already paid' })
+    }
+    
+    // Prevent re-initiating payment if one is pending
+    if (booking.paymentStatus === 'pending' && booking.paymentOrderId) {
+      console.warn(`Duplicate payment attempt for booking ${bookingId}`)
+      return res.status(400).json({ error: 'Payment already in progress for this booking' })
     }
 
     // 4. Get pricing from Firestore
@@ -197,12 +210,31 @@ app.post('/api/webhook/midtrans', async (req, res) => {
     }
 
     const bookingDoc = snapshot.docs[0]
+    const bookingData = bookingDoc.data()
+    
+    // Prevent duplicate processing - check current payment status
+    if (bookingData.paymentStatus === 'paid') {
+      console.log(`⏭️ Skipping webhook - booking already marked as paid: ${order_id}`)
+      return res.status(200).send('OK')
+    }
+    
     let paymentStatus = 'pending'
 
+    // Only process valid status transitions
     if (transaction_status === 'capture' || transaction_status === 'settlement') {
-      paymentStatus = fraud_status === 'accept' ? 'paid' : 'fraud'
+      if (fraud_status === 'accept') {
+        paymentStatus = 'paid'
+        console.log(`✅ Payment confirmed for order: ${order_id}`)
+      } else if (fraud_status === 'challenge') {
+        paymentStatus = 'fraud_challenge'  // Still pending manual review
+        console.log(`⚠️ Fraud challenge for order: ${order_id}`)
+      } else {
+        paymentStatus = 'fraud'
+        console.log(`❌ Fraud detected for order: ${order_id}`)
+      }
     } else if (['cancel', 'deny', 'expire'].includes(transaction_status)) {
       paymentStatus = 'failed'
+      console.log(`❌ Payment failed for order: ${order_id} - status: ${transaction_status}`)
     }
 
     await bookingDoc.ref.update({
