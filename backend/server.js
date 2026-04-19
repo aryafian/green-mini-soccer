@@ -79,7 +79,7 @@ app.post('/api/payment', async (req, res) => {
     }
 
     // 2. Extract booking data
-    const { bookingId, customerName, customerEmail, duration, startHour, rentals } = req.body
+    const { bookingId, customerName, customerEmail, duration, startHour, rentals, paymentGateway, paymentMethod } = req.body
     if (!bookingId || !duration) {
       return res.status(400).json({ error: 'Missing required fields: bookingId, duration' })
     }
@@ -154,6 +154,8 @@ app.post('/api/payment', async (req, res) => {
 
     // 6. Create Midtrans transaction
     const orderId = `booking-${bookingId}-${Date.now()}`
+    console.log(`Creating payment for booking ${bookingId} gateway: ${paymentGateway || 'midtrans'} method: ${paymentMethod || 'qris'}`)
+    
     const parameter = {
       transaction_details: {
         order_id: orderId,
@@ -176,7 +178,9 @@ app.post('/api/payment', async (req, res) => {
     await bookingRef.update({
       paymentOrderId: orderId,
       paymentStatus: 'pending',
-      totalPrice: grossAmount
+      totalPrice: grossAmount,
+      paymentGateway: paymentGateway || 'midtrans',
+      paymentMethod: paymentMethod || 'qris'
     })
 
     // 8. Return token & redirect URL

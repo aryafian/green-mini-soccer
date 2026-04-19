@@ -39,14 +39,17 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
     jerseysQty: 0
   })
   const [paymentLoading, setPaymentLoading] = useState(false)
+  const [selectedPaymentGateway, setSelectedPaymentGateway] = useState('midtrans')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('qris')
 
-  // Payment methods available
-  const paymentMethods = [
-    { id: 'qris', label: 'QRIS', value: 'qris' },
-    { id: 'bank_transfer', label: 'Transfer Bank', value: 'bank_transfer' },
-    { id: 'ewallet', label: 'E-Wallet (GCash, Dana, OVO, LinkAja)', value: 'ewallet' },
-    { id: 'credit_card', label: 'Kartu Kredit/Debit', value: 'credit_card' },
+  // Payment gateways available
+  const paymentGateways = [
+    { id: 'midtrans', label: 'Midtrans - QRIS & E-Wallet Bank' }
+  ]
+
+  // Payment methods available from Midtrans
+  const midtransMethods = [
+    { id: 'qris', label: '🔲 QRIS' },
   ]
 
   // Handle background transitions
@@ -91,8 +94,7 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       setIsLoadingBookings(false)
       
       if (error.code === 'permission-denied') {
-        console.warn('Permission denied reading bookings - user may not be authenticated')
-        setBookingsError('Silakan login untuk melihat jadwal booking')
+        alert('Tidak dapat memuat data booking. Pastikan Firestore rules mengizinkan read tanpa autentikasi.')
       }
     })
 
@@ -295,7 +297,9 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
           customerEmail: currentUser.email,
           duration,
           startHour: 6 + timeIndex,
-          rentals: newBooking.rentals
+          rentals: newBooking.rentals,
+          paymentGateway: selectedPaymentGateway,
+          paymentMethod: selectedPaymentMethod
         })
       })
 
@@ -311,8 +315,27 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       setSelectedSlot(null)
       setPaymentLoading(false)
 
-      // Open Midtrans payment popup
+      // Map payment method to Midtrans enabled payments
+      const enabledPaymentsMap = {
+        mandiri: ['mandiri'],
+        bca: ['bca'],
+        bni: ['bni'],
+        cimb: ['cimb'],
+        permata: ['permata'],
+        maybank: ['maybank'],
+        gopay: ['gopay'],
+        ovo: ['ovo'],
+        dana: ['dana'],
+        linkaja: ['linkaja'],
+        shopeepay: ['shopeepay'],
+        qris: ['qris'],
+        credit_card: ['credit_card']
+      }
+      const enabledPayments = enabledPaymentsMap[selectedPaymentMethod] || ['qris']
+
+      // Open Midtrans payment popup with selected payment methods
       window.snap.pay(token, {
+        enabledPayments: enabledPayments,
         onSuccess: () => {
           alert('Pembayaran berhasil! Booking Anda telah dikonfirmasi.')
         },
@@ -757,25 +780,50 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
                 </div>
               </div>
               
-              {/* Payment Method Selection */}
+              {/* Payment Gateway Selection */}
               <div className="booking-payment-method-section">
-                <label htmlFor="payment-method" className="payment-method-label">
-                  <span>💳 Pilih Metode Pembayaran:</span>
+                <label htmlFor="payment-gateway" className="payment-method-label">
+                  <span>💳 Pilih Payment Gateway:</span>
                 </label>
                 <select 
-                  id="payment-method"
+                  id="payment-gateway"
                   className="payment-method-select"
-                  value={selectedPaymentMethod}
-                  onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                  value={selectedPaymentGateway}
+                  onChange={(e) => {
+                    setSelectedPaymentGateway(e.target.value)
+                    setSelectedPaymentMethod('qris')
+                  }}
                   disabled={paymentLoading}
                 >
-                  {paymentMethods.map((method) => (
-                    <option key={method.id} value={method.id}>
-                      {method.label}
+                  {paymentGateways.map((gateway) => (
+                    <option key={gateway.id} value={gateway.id}>
+                      {gateway.label}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {/* Payment Method Selection (shown when Midtrans is selected) */}
+              {selectedPaymentGateway === 'midtrans' && (
+                <div className="booking-payment-method-section">
+                  <label htmlFor="payment-method" className="payment-method-label">
+                    <span>🔲 Pilih Metode Pembayaran:</span>
+                  </label>
+                  <select 
+                    id="payment-method"
+                    className="payment-method-select"
+                    value={selectedPaymentMethod}
+                    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                    disabled={paymentLoading}
+                  >
+                    {midtransMethods.map((method) => (
+                      <option key={method.id} value={method.id}>
+                        {method.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <button type="submit" className="submit-booking-btn" disabled={paymentLoading}>
                 {paymentLoading ? 'Memproses...' : 'Konfirmasi & Bayar'}
