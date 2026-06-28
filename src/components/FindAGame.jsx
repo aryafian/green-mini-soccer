@@ -315,8 +315,12 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || `Payment API error: ${response.status}`)
+        let errorMsg = `Payment API error: ${response.status}`
+        try {
+          const errorData = await response.json()
+          errorMsg = errorData.error || errorData.message || errorMsg
+        } catch (e) { /* ignore parse error */ }
+        throw new Error(errorMsg)
       }
 
       const { token } = await response.json()
