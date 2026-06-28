@@ -146,6 +146,8 @@ app.post('/api/payment', async (req, res) => {
     // 4. Get pricing from Firestore
     const pricingSnap = await db.collection('settings').doc('pricing').get()
     const pricing = pricingSnap.exists ? pricingSnap.data() : {}
+    console.log('📋 Pricing data:', JSON.stringify(pricing))
+    console.log(`📋 startHour=${startHour}, duration=${duration}`)
 
     // 5. Build item details
     const itemDetails = []
@@ -182,8 +184,10 @@ app.post('/api/payment', async (req, res) => {
     }
 
     const grossAmount = calculateGrossAmount(itemDetails)
+    console.log('💰 Item details:', JSON.stringify(itemDetails))
+    console.log('💰 Gross amount:', grossAmount)
     if (grossAmount <= 0) {
-      return res.status(400).json({ error: 'Gross amount must be greater than 0' })
+      return res.status(400).json({ error: 'Total harga 0. Pastikan data pricing sudah diatur di Firestore (collection: settings, doc: pricing)' })
     }
 
     // 6. Create Midtrans transaction
@@ -224,8 +228,9 @@ app.post('/api/payment', async (req, res) => {
       redirectUrl: transaction.redirect_url
     })
   } catch (err) {
-    console.error('Payment endpoint error:', err)
-    res.status(500).json({ error: 'Internal Server Error', message: err?.message })
+    console.error('Payment endpoint error:', err?.message || err)
+    console.error('Full error:', JSON.stringify(err, Object.getOwnPropertyNames(err)))
+    res.status(500).json({ error: err?.message || 'Internal Server Error' })
   }
 })
 
