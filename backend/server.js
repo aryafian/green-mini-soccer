@@ -215,10 +215,6 @@ app.post('/api/payment', async (req, res) => {
       customer_details: {
         first_name: customerName || booking.name || 'Customer',
         email: customerEmail || booking.bookedBy || 'noreply@greenminisoccer.com'
-      },
-      custom_expiry: {
-        expiry_duration: 60,
-        unit: 'minute'
       }
     }
 

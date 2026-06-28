@@ -427,21 +427,17 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   }
 
   const getBookingsForDate = (dateObj) => {
-    // Filter bookings for the selected date
+    // Filter bookings for the selected date, exclude failed/expired payments
     const filtered = bookings.filter(b => {
-      // Check if b.date is an object with the expected properties
-      if (!b.date || typeof b.date !== 'object') {
-        console.log('Invalid booking date format:', b)
-        return false
-      }
+      if (!b.date || typeof b.date !== 'object') return false
+      
+      // Exclude failed/expired/fraud bookings
+      const excludedStatuses = ['failed', 'expire', 'cancel', 'deny', 'fraud']
+      if (excludedStatuses.includes(b.paymentStatus)) return false
       
       const matches = b.date.date === dateObj.date && 
                      b.date.month === dateObj.month && 
                      b.date.year === dateObj.year
-      
-      if (matches) {
-        console.log('Found matching booking:', b, 'for date:', dateObj)
-      }
       
       return matches
     })
@@ -592,13 +588,16 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
                                   <td className="time-cell">{time}</td>
                                   {isPartOfRowspan ? null : booking ? (
                                     <td 
-                                      className="booking-cell"
+                                      className={`booking-cell ${booking.paymentStatus === 'paid' ? 'booking-paid' : 'booking-pending'}`}
                                       rowSpan={booking.duration}
                                     >
                                       <div className="booking-item">
                                         <div className="booking-name">{booking.name}</div>
                                         <div className="booking-time">
                                           {scheduleData.timeSlots[timeIndex]} - {scheduleData.timeSlots[timeIndex + booking.duration]}
+                                        </div>
+                                        <div className="booking-status-label">
+                                          {booking.paymentStatus === 'paid' ? '✅ Lunas' : '⏳ Menunggu Pembayaran'}
                                         </div>
                                         <div className="booking-user">by {booking.bookedBy}</div>
                                       </div>

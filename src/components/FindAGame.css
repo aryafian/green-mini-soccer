@@ -459,16 +459,37 @@
 }
 
 .booking-cell {
-  background: #2f855a;
   color: white;
   padding: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.booking-cell:hover {
-  background: #276749;
+/* Pending payment - Orange */
+.booking-cell.booking-pending {
+  background: linear-gradient(135deg, #e67e22, #f39c12);
+}
+
+.booking-cell.booking-pending:hover {
+  background: linear-gradient(135deg, #d35400, #e67e22);
   transform: scale(1.02);
+}
+
+/* Paid / Confirmed - Green */
+.booking-cell.booking-paid {
+  background: linear-gradient(135deg, #2f855a, #38a169);
+}
+
+.booking-cell.booking-paid:hover {
+  background: linear-gradient(135deg, #276749, #2f855a);
+  transform: scale(1.02);
+}
+
+.booking-status-label {
+  font-size: 0.7rem;
+  opacity: 0.95;
+  font-weight: 500;
+  margin-top: 0.1rem;
 }
 
 .booking-item {
