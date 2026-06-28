@@ -11,11 +11,23 @@ dotenv.config()
 
 // Initialize Firebase
 const getPrivateKey = () => {
-  const pk = process.env.FIREBASE_PRIVATE_KEY || ''
-  // Remove quotes if present
-  const unquoted = pk.startsWith('"') && pk.endsWith('"') ? pk.slice(1, -1) : pk
-  // Replace escaped newlines \\n with actual newlines
-  return unquoted.replace(/\\n/g, '\n')
+  let pk = process.env.FIREBASE_PRIVATE_KEY || ''
+  
+  // Method 1: Try JSON.parse (works when key is wrapped in quotes with \n escapes)
+  if (pk.startsWith('"') || pk.startsWith("'")) {
+    try {
+      pk = JSON.parse(pk)
+      return pk
+    } catch (e) {
+      // Remove surrounding quotes manually
+      pk = pk.replace(/^["']/, '').replace(/["']$/, '')
+    }
+  }
+  
+  // Method 2: Replace literal \n with actual newlines
+  pk = pk.replace(/\\n/g, '\n')
+  
+  return pk
 }
 
 const serviceAccount = {
