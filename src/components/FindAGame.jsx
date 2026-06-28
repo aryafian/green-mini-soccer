@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { collection, addDoc, query, onSnapshot, orderBy, doc, getDoc, deleteDoc } from 'firebase/firestore'
 import { db, app, auth } from '../firebase'
+import BookingReceipt from './BookingReceipt'
 import './FindAGame.css'
 
 function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
@@ -41,6 +42,8 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   const [paymentLoading, setPaymentLoading] = useState(false)
   const [selectedPaymentGateway, setSelectedPaymentGateway] = useState('midtrans')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('qris')
+  const [receiptBookingId, setReceiptBookingId] = useState(null)
+  const [showReceipt, setShowReceipt] = useState(false)
 
   // Payment gateways available
   const paymentGateways = [
@@ -216,12 +219,20 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
   // Load Midtrans Snap.js dynamically
   useEffect(() => {
     const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY
-    if (!clientKey) return
+    if (!clientKey) {
+      console.warn('⚠️ VITE_MIDTRANS_CLIENT_KEY is not set! Midtrans Snap.js will not load.')
+      return
+    }
     if (document.getElementById('midtrans-snap-js')) return
+    const isProd = import.meta.env.VITE_MIDTRANS_IS_PRODUCTION === 'true'
     const script = document.createElement('script')
     script.id = 'midtrans-snap-js'
-    script.src = 'https://app.midtrans.com/snap/snap.js'
+    script.src = isProd
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js'
     script.setAttribute('data-client-key', clientKey)
+    script.onload = () => console.log(`✅ Midtrans Snap.js loaded (${isProd ? 'PRODUCTION' : 'SANDBOX'})`)
+    script.onerror = () => console.error('❌ Failed to load Midtrans Snap.js')
     document.head.appendChild(script)
     return () => {
       const el = document.getElementById('midtrans-snap-js')
@@ -333,17 +344,22 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
       }
       const enabledPayments = enabledPaymentsMap[selectedPaymentMethod] || ['qris']
 
+      // Store booking ID for receipt display
+      const successBookingId = bookingId
+
       // Open Midtrans payment popup with selected payment methods
       window.snap.pay(token, {
         enabledPayments: enabledPayments,
         onSuccess: () => {
-          alert('Pembayaran berhasil! Booking Anda telah dikonfirmasi.')
+          // Show receipt with barcode
+          setReceiptBookingId(successBookingId)
+          setShowReceipt(true)
         },
         onPending: () => {
-          alert('Pembayaran sedang diproses. Booking Anda menunggu konfirmasi pembayaran.')
+          alert('Pembayaran sedang diproses. Booking Anda menunggu konfirmasi pembayaran. Struk akan tersedia setelah pembayaran dikonfirmasi.')
         },
         onError: () => {
-          alert('Pembayaran gagal. Booking telah dibatalkan. Silakan coba booking ulang.')
+          alert('Pembayaran gagal. Silakan coba booking ulang.')
         },
         onClose: () => {
           alert('Anda menutup halaman pembayaran. Booking perlu dibayar untuk dikonfirmasi.')
@@ -831,6 +847,17 @@ function FindAGame({ onBack, currentUser, onLoginClick, backgroundImage }) {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Receipt Modal */}
+      {showReceipt && receiptBookingId && (
+        <BookingReceipt
+          bookingId={receiptBookingId}
+          onClose={() => {
+            setShowReceipt(false)
+            setReceiptBookingId(null)
+          }}
+        />
       )}
     </div>
   )

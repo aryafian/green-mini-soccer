@@ -5,6 +5,7 @@ import { initializeApp, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getAuth } from 'firebase-admin/auth'
 import midtransClient from 'midtrans-client'
+import crypto from 'crypto'
 
 dotenv.config()
 
@@ -13,7 +14,7 @@ const getPrivateKey = () => {
   const pk = process.env.FIREBASE_PRIVATE_KEY || ''
   // Remove quotes if present
   const unquoted = pk.startsWith('"') && pk.endsWith('"') ? pk.slice(1, -1) : pk
-  // Replace escaped newlines \n with actual newlines
+  // Replace escaped newlines \\n with actual newlines
   return unquoted.replace(/\\n/g, '\n')
 }
 
@@ -36,11 +37,14 @@ const db = getFirestore()
 const adminAuth = getAuth()
 
 // Initialize Midtrans
+const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true'
 const snap = new midtransClient.Snap({
-  isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+  isProduction,
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY
 })
+
+console.log(`💳 Midtrans mode: ${isProduction ? 'PRODUCTION' : 'SANDBOX'}`)
 
 // Express app
 const app = express()
@@ -59,6 +63,13 @@ function calculateGrossAmount(itemDetails = []) {
     const qty = Number(item?.quantity) || 0
     return sum + price * qty
   }, 0)
+}
+
+// Generate unique receipt code
+function generateReceiptCode() {
+  const timestamp = Date.now().toString(36).toUpperCase()
+  const random = crypto.randomBytes(3).toString('hex').toUpperCase()
+  return `GMS-${timestamp}-${random}`
 }
 
 // POST /api/payment - Create Midtrans payment token
@@ -103,10 +114,33 @@ app.post('/api/payment', async (req, res) => {
       return res.status(400).json({ error: 'Booking already paid' })
     }
     
-    // Prevent re-initiating payment if one is pending
+    // Allow re-payment if previous payment failed/expired, block only if still pending
     if (booking.paymentStatus === 'pending' && booking.paymentOrderId) {
-      console.warn(`Duplicate payment attempt for booking ${bookingId}`)
-      return res.status(400).json({ error: 'Payment already in progress for this booking' })
+      // Check if the previous Midtrans transaction is still active
+      try {
+        const statusResponse = await snap.transaction.status(booking.paymentOrderId)
+        const txStatus = statusResponse.transaction_status
+        
+        if (['settlement', 'capture'].includes(txStatus)) {
+          // Already paid via webhook, update our record
+          await bookingRef.update({ paymentStatus: 'paid' })
+          return res.status(400).json({ error: 'Booking already paid' })
+        }
+        
+        if (['pending'].includes(txStatus)) {
+          // Still pending - allow re-creation by cancelling old one first
+          try {
+            await snap.transaction.cancel(booking.paymentOrderId)
+            console.log(`🔄 Cancelled stale pending transaction: ${booking.paymentOrderId}`)
+          } catch (cancelErr) {
+            console.warn(`Could not cancel old transaction: ${cancelErr.message}`)
+          }
+        }
+        // If deny/cancel/expire/failure - allow new payment
+      } catch (statusErr) {
+        // Transaction not found or error - allow new payment
+        console.warn(`Could not check old transaction status: ${statusErr.message}`)
+      }
     }
 
     // 4. Get pricing from Firestore
@@ -180,7 +214,8 @@ app.post('/api/payment', async (req, res) => {
       paymentStatus: 'pending',
       totalPrice: grossAmount,
       paymentGateway: paymentGateway || 'midtrans',
-      paymentMethod: paymentMethod || 'qris'
+      paymentMethod: paymentMethod || 'qris',
+      itemDetails: itemDetails
     })
 
     // 8. Return token & redirect URL
@@ -223,12 +258,16 @@ app.post('/api/webhook/midtrans', async (req, res) => {
     }
     
     let paymentStatus = 'pending'
+    let updateData = {}
 
     // Only process valid status transitions
     if (transaction_status === 'capture' || transaction_status === 'settlement') {
-      if (fraud_status === 'accept') {
+      if (!fraud_status || fraud_status === 'accept') {
         paymentStatus = 'paid'
-        console.log(`✅ Payment confirmed for order: ${order_id}`)
+        // Generate receipt code when payment is confirmed
+        updateData.receiptCode = generateReceiptCode()
+        updateData.paidAt = new Date().toISOString()
+        console.log(`✅ Payment confirmed for order: ${order_id} | Receipt: ${updateData.receiptCode}`)
       } else if (fraud_status === 'challenge') {
         paymentStatus = 'fraud_challenge'  // Still pending manual review
         console.log(`⚠️ Fraud challenge for order: ${order_id}`)
@@ -244,7 +283,8 @@ app.post('/api/webhook/midtrans', async (req, res) => {
     await bookingDoc.ref.update({
       paymentStatus,
       paymentNotification: notification,
-      paymentUpdatedAt: new Date().toISOString()
+      paymentUpdatedAt: new Date().toISOString(),
+      ...updateData
     })
 
     res.status(200).send('OK')
@@ -254,9 +294,54 @@ app.post('/api/webhook/midtrans', async (req, res) => {
   }
 })
 
+// GET /api/booking/:bookingId - Public endpoint for receipt/QR code scan
+// Returns limited booking data (no sensitive info) - no auth required
+app.get('/api/booking/:bookingId', async (req, res) => {
+  try {
+    const { bookingId } = req.params
+    
+    if (!bookingId) {
+      return res.status(400).json({ error: 'Missing bookingId' })
+    }
+
+    const bookingRef = db.collection('bookings').doc(bookingId)
+    const bookingSnap = await bookingRef.get()
+    
+    if (!bookingSnap.exists) {
+      return res.status(404).json({ error: 'Booking not found' })
+    }
+
+    const booking = bookingSnap.data()
+    
+    // Return only public/safe fields for receipt display
+    res.json({
+      id: bookingId,
+      name: booking.name || '-',
+      date: booking.date || null,
+      time: booking.time,
+      duration: booking.duration,
+      totalPrice: booking.totalPrice || 0,
+      paymentStatus: booking.paymentStatus || 'unknown',
+      paymentMethod: booking.paymentMethod || '-',
+      paymentGateway: booking.paymentGateway || '-',
+      receiptCode: booking.receiptCode || null,
+      paidAt: booking.paidAt || null,
+      bookedAt: booking.bookedAt || null,
+      bookedByName: booking.bookedByName || '-',
+      rentals: booking.rentals || {},
+      itemDetails: booking.itemDetails || []
+    })
+  } catch (err) {
+    console.error('Get booking error:', err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 // Start server
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
   console.log(`🚀 Backend running at http://localhost:${PORT}`)
   console.log(`📍 Payment endpoint: http://localhost:${PORT}/api/payment`)
+  console.log(`📍 Booking endpoint: http://localhost:${PORT}/api/booking/:id`)
+  console.log(`📍 Webhook endpoint: http://localhost:${PORT}/api/webhook/midtrans`)
 })

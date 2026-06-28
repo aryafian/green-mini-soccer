@@ -13,6 +13,7 @@ import News from './components/News'
 import NewsDetail from './components/NewsDetail'
 import AboutFacilities from './components/AboutFacilities'
 import Admin from './components/Admin'
+import ReceiptDetail from './components/ReceiptDetail'
 import './App.css'
 
 function App() {
@@ -20,9 +21,10 @@ function App() {
   const [currentBgImage, setCurrentBgImage] = useState(0)
   const [nextBgImage, setNextBgImage] = useState(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const [currentPage, setCurrentPage] = useState('home') // 'home', 'find-game', 'our-contact', 'history', 'transaction', 'news', 'news-detail', 'admin'
+  const [currentPage, setCurrentPage] = useState('home') // 'home', 'find-game', 'our-contact', 'history', 'transaction', 'news', 'news-detail', 'admin', 'receipt'
   const [currentUser, setCurrentUser] = useState(null)
   const [selectedNews, setSelectedNews] = useState(null)
+  const [receiptBookingId, setReceiptBookingId] = useState(null)
   const [backgroundImages, setBackgroundImages] = useState([
     'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000',
     'https://images.unsplash.com/photo-1589487391730-58f20eb2c308?q=80&w=2000',
@@ -169,6 +171,42 @@ function App() {
         element.scrollIntoView({ behavior: 'smooth' })
       }
     }, 100)
+  }
+
+  // Parse hash URL for receipt deep-linking (QR code scan)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      const receiptMatch = hash.match(/^#\/receipt\/(.+)$/)
+      if (receiptMatch) {
+        const bookingId = receiptMatch[1]
+        setReceiptBookingId(bookingId)
+        setCurrentPage('receipt')
+      }
+    }
+
+    // Check on initial load
+    handleHashChange()
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
+
+  // Receipt page (public, accessible via QR code scan)
+  if (currentPage === 'receipt' && receiptBookingId) {
+    return (
+      <div className="app">
+        <ReceiptDetail
+          bookingId={receiptBookingId}
+          onBack={() => {
+            setCurrentPage('home')
+            setReceiptBookingId(null)
+            window.location.hash = ''
+          }}
+        />
+      </div>
+    )
   }
 
   if (currentPage === 'find-game') {
